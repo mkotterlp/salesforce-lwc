@@ -1,0 +1,23 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "Marq",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "versionDescription": ""
+    }
+  ],
+  "name": "Marq",
+  "namespace": "Marq",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "62.0",
+  "packageAliases": {
+    "Marq": "0Hoaj0000000I8DCAU",
+    "Marq@0.1.0-1": "04taj0000004uBhAAI",
+    "Marq@0.1.0-2": "04taj0000004uI9AAI",
+    "Marq@0.1.0-3": "04taj0000004uJlAAI",
+    "Marq@0.1.0-4": "04taj0000004virAAA"
+  }
+}

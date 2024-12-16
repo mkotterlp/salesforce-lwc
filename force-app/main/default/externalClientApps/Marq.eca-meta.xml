@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExternalClientApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Marq</fullName>
+    <contactEmail>support@marq.com</contactEmail>
+    <description>Power your designs and team&apos;s content with Salesforce company and contact data through Marq&apos;s Data Automation platform. Embed templates in your records to allow for your sales team to work where their deals are. Templates will auto filter based on deal stages, and more!</description>
+    <distributionState>Packaged</distributionState>
+    <iconUrl>https://cdn-cashy-static-assets.marq.com/images/Product/Marq_Q_Logo.png</iconUrl>
+    <isProtected>false</isProtected>
+    <label>Marq</label>
+    <logoUrl>https://cdn-cashy-static-assets.marq.com/images/Product/Marq_Logo.png</logoUrl>
+    <orgScopedExternalApp>00Dak00000IUks1:Marq</orgScopedExternalApp>
+</ExternalClientApplication>

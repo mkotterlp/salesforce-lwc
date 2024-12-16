@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="Marqcard">
+    <apiVersion>53.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
+
+            <property name="adminsettings" type="Boolean" label="Turn on admin settings (only shows to those assigned to Marq_Admin)" default="false" description="Enables the admin settings to configure template filter mapping and data"/>
+
+            <property name="textboxFields" type="String" label="SFDC Fields to Use" description="Add each SFDC field you want to use in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g. 'Opportunity.StageName, Opportunity.Industry, Opportunity.category__c'" />
+            <property name="textboxFilters" type="String" label="Corresponding Marq Filters" description="Add each corresponding Marq filter you want to use in the format of FILTER1, FILTER2, FILTER3. e.g. 'SF Stage, SF Industry, SF Category'" />
+            <property name="filterLogic" type="String" label="Custom Filter Logic" description="Define custom filter logic using field numbers. e.g., '(1 or 2) AND 3'" />
+            <property name="customFields" type="String" label="Custom Fields" description="Enter the fields you want to include in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g., 'Opportunity.Name, Opportunity.StageName, Account.Industry'" />
+            <property name="customSAMLlogin" type="String" label="Custom SAML domain" description="Only set if you've configured a custom sign in option with Marq" />
+
+            <!-- Additional properties for toggling feature availability -->
+            <property name="enableLock" type="Boolean" label="Enable Lock" default="false" description="Toggle to allow users to lock elements on a page or project."/>
+            <property name="enableDownload" type="Boolean" label="Enable Download" default="false" description="Allow users to download projects in various formats."/>
+            <property name="enablePrint" type="Boolean" label="Enable Print" default="false" description="Allow users to create print orders for connected vendors."/>
+            <property name="enableCollaborate" type="Boolean" label="Enable Collaborate" default="false" description="Allow users to collaborate within their Marq account."/>
+            <property name="enableShare" type="Boolean" label="Enable Share" default="false" description="Allow users to share projects to external platforms like social media."/>
+            <property name="enableSaveName" type="Boolean" label="Enable Save Name" default="true" description="Allow specifying the name of the 'save' action button."/>
+            <property name="enableBackButton" type="Boolean" label="Enable Back Button" default="false" description="Enable the back button to return to the platform."/>
+
+            <!-- File type availability -->
+            <property name="allowPDF" type="Boolean" label="Allow PDF" default="true" description="Enable PDF as a file type for downloads."/>
+            <property name="allowJPG" type="Boolean" label="Allow JPG" default="false" description="Enable JPG as a file type for downloads."/>
+            <property name="allowPNG" type="Boolean" label="Allow PNG" default="false" description="Enable PNG as a file type for downloads."/>
+            <property name="allowGIF" type="Boolean" label="Allow GIF" default="false" description="Enable GIF as a file type for downloads."/>
+            <property name="allowMP4" type="Boolean" label="Allow MP4" default="false" description="Enable MP4 as a file type for downloads."/>
+
+             <!-- Tab availability -->
+             <property name="showDashboard" type="Boolean" label="Show Dashboard" default="false" description="Enable the dashboard tab to show to the user"/>
+             <property name="showDocuments" type="Boolean" label="Show Documents" default="false" description="Enable the documents tab to show the user's projects"/>
+             <property name="showTemplates" type="Boolean" label="Show Templates" default="true" description="Enable templates tab to show templates to the user"/>
+            
+            
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

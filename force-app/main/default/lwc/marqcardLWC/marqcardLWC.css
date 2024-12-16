@@ -1,0 +1,673 @@
+@font-face {
+  font-family: 'Poppins';
+  src: url('/resource/Poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/resource/Poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/resource/Poppins/Poppins-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/resource/Poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+:host {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Apply specific font styles and weights to headers */
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900; /* Black weight */
+  font-size: 2rem;
+}
+
+h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold; /* Bold weight */
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500; /* Semi-bold weight */
+  font-size: 1.1rem;
+}
+
+p {
+  font-family: 'Poppins', sans-serif;
+  font-weight: normal; /* Regular weight */
+  font-size: 1rem;
+}
+
+.modifyappsettings a:hover {
+  color: #0070d2; /* Salesforce brand blue */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.slds-box.admincontrols {
+  margin-bottom:10px;
+}
+
+.admincontrols .slds-icon {
+  width:auto;
+  height:auto;
+}
+
+.slds-card__body {
+  margin-top:0px;
+}
+
+.slds-grid.slds-card__header {
+  display:none;
+}
+
+.search-section {
+
+}
+
+/* Search container styling */
+.search-container {
+  display: flex;
+  width: 100%;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:10px;
+  border: 1px solid #d8dde6;
+  border-radius: 4px;
+  overflow: hidden; /* Keeps children inside the rounded border */
+}
+
+/* Search input styling */
+.search-input {
+  flex-grow: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Placeholder color */
+.search-input::placeholder {
+  color: #999;
+}
+
+/* Search button styling */
+.search-button {
+  background-color: #0070d2; /* Blue background for the button */
+  border: none;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for the button */
+.search-button:hover {
+  background-color: #005fb2; /* Darker blue on hover */
+}
+
+/* Search icon styling */
+.search-icon {
+  width: 16px;
+  height: 16px;
+  fill: white; /* White color for the magnifying glass */
+}
+
+
+.search-input:focus {
+  outline: none;
+  border-color: none;
+  box-shadow: none;
+}
+
+.search-container:focus-within {
+  border-color: #1b5297;
+  box-shadow: 0 0 0 3px rgba(27, 82, 151, 0.2);
+}
+
+/* Align the input field with the rest of the content */
+.content-title {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.template-container {
+  max-height: 400px;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.template-container.project-contain {
+  overflow: visible;
+  max-height: none;
+}
+
+.template-image-container {
+  background-color: #E9EFF9;
+    border-radius: 8px;
+    width:100%;
+    max-width:100px;
+    display: flex;
+    padding:5px;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+}
+
+svg[data-key="down"] {
+  display: none!important;
+  opacity:0;
+}
+
+
+.templateslist {
+  border-top:1px solid #E9EFF9;
+}
+
+.slds-p-horizontal_small,
+.slds-p-horizontal--small {
+  padding: 0px;
+}
+
+/* .template-row:not(:last-child) {
+  border-bottom: 0.5px solid #c9c9c9;
+} */
+
+.slds-box {
+  padding: 0px;
+  border-radius: 0px;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.slds-accordion__summary-action {
+  padding: 5px 0 5px !important;
+  font-size: 14px !important;
+}
+
+.content-title {
+  margin-top: 20px;
+}
+
+.slds-dropdown {
+  position: absolute;
+  z-index: 9000;
+}
+
+.scroll-content {
+  position: relative;
+}
+
+.item-wrapper {
+  position: relative;
+  overflow: visible; /* Allows dropdown menus to be fully visible */
+}
+
+
+
+.custom-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+}
+
+
+.logo-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+    height: 2rem;
+    margin-top: 1rem;
+}
+
+.main-modal-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.main-modal-image img {
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #c9c9c9;
+}
+
+.beta-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: .6rem;
+  margin-top: -4px;
+  margin-left: 10px;
+  padding: 0.1rem 0.3rem;
+  border:1px solid #d93267;
+  font-weight: 600;
+  color: #d93267;
+  height: 1rem;
+  text-transform: uppercase;
+}
+
+.slds-m-bottom_small,
+.slds-m-bottom--small {
+  margin-bottom: 0px;
+}
+
+.logo-image {
+  max-width: 80px;
+}
+
+.content-title {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom:0px;
+}
+
+.content-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.card-container {
+  padding-left:1rem;
+  padding-right:1rem;
+}
+
+.defaultrow {
+  position: relative;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 1rem;
+  border-radius: 0;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+}
+
+.template-title {
+  font-size:16px;
+}
+
+.template-row {
+  position: relative;
+  height: 80px;
+  width: 100%;
+  padding-top: 8px;
+  padding-bottom:8px;
+  border-radius: 0;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+}
+
+.button-container {
+  opacity:0;
+}
+
+.inline-container {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem; /* Adjust spacing between the SVG and text */
+  padding-bottom: .3rem;
+}
+
+.filter-container {
+  padding-bottom:8px;
+}
+
+.inline-text {
+  font-size: .8rem; /* Adjust font size as needed */
+}
+
+
+.template-row:hover .button-container {
+  opacity:1;
+}
+
+.active-filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.active-filter-tag {
+  background-color: #e0f7fa;
+  border: 1px solid #00acc1;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.remove-filter-button {
+  background: none;
+  border: none;
+  color: #0c1219;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+
+.template-image {
+  margin: 0px;
+  padding: 0px;
+  height:100%;
+  width:auto;
+}
+
+.action-button-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px; /* Space between buttons */
+  z-index: 1;
+}
+
+.logout-button,
+.sync-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  color: #0c1219; /* Default icon color */
+}
+
+.remove-filter-button:hover,
+.logout-button:hover,
+.sync-button:hover {
+  color: #0070d2; /* Optional: Change color on hover */
+}
+
+
+.logout-button svg,
+.sync-button svg {
+  transition: transform 0.3s ease;
+}
+
+.sync-button svg.syncing {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.copy-link-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.create-icon {
+  color: var(--lwc-colorTextLink, #0070d2);
+  fill: var(--lwc-colorTextLink, #0070d2);
+  width:20px;
+  height:20px;
+  margin-right:4px;
+}
+
+.copy-icon {
+  color: var(--lwc-colorTextLink, #0070d2);
+  width:16px;
+  height:16px;
+}
+
+.create-icon:hover, .create-project:hover {
+  cursor: pointer;
+}
+
+.public-link {
+  color: var(--lwc-colorTextLink, #0070d2);
+  text-decoration: underline;
+  font-size: .8rem;
+}
+
+.create-project {
+  color: var(--lwc-colorTextLink, #0070d2);
+  font-size: .8rem;
+}
+
+lightning-button-menu {
+  --slds-c-button-menu-color-background: transparent; /* Transparent background */
+  --slds-c-button-menu-color-border: transparent;     /* Transparent border */
+  --slds-c-button-color-border: transparent;          /* Transparent border */
+}
+
+.copy-icon {
+  --sds-c-icon-color-foreground-default: #0070d2; /* Match link color */
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+
+.slds-card__body {
+  padding: 8px;
+}
+
+.slds-modal__header .slds-modal__close {
+  position: relative;
+  top: 0;
+}
+
+.template-modified-date {
+  font-size: .8rem;
+}
+
+.nobackground {
+  border: none;
+  background: transparent;
+}
+
+.custom-accordion .slds-accordion__summary {
+  color: var(
+    --lwc-brand-text-link-color,
+    #0070d2
+  ); /* Matches SLDS link color */
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.custom-accordion .slds-accordion__summary:hover {
+  color: var(
+    --lwc-brand-text-link-hover-color,
+    #005fb2
+  ); /* Matches SLDS link hover color */
+}
+
+.spaced-button {
+  margin-left: 10px; /* Adjust spacing as needed */
+}
+
+.pspace {
+  padding-bottom: 10px;
+}
+
+.slds-modal {
+  overflow: visible; /* Allow content to overflow the modal */
+}
+
+.copybutton {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.marqembed .slds-spinner_container {
+  display: flex;
+  flex-direction: column; /* Stack spinner and text vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  position: relative;
+}
+
+.marqembed .slds-spinner-parent {
+  margin-bottom: 10px; /* Add spacing below the spinner */
+  position: relative;
+  flex: 1;
+}
+
+.marqembed .custom-loading-text {
+  margin-top: 20px;
+  text-align: center; /* Center the text */
+  font-size: 1rem; /* Adjust font size as needed */
+  color: #555; /* Optional: Set a text color */
+  position: relative;
+  flex: 1;
+}
+
+.marqembed .slds-modal__container {
+  display: flex;
+  max-width: none; /* Prevents overriding by framework styles */
+  max-height: none; /* Prevents overriding by framework styles */
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  width: 98%;
+  padding: 5px;
+  height: 100vh;
+  margin: auto; /* Center within parent container */
+  overflow: hidden; /* Clip overflowing content */
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+}
+
+.marqembed .slds-modal__header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between; /* Spread title and close button */
+  align-items: center; /* Center content vertically */
+  padding: 1rem; /* Add some padding for spacing */
+  border-bottom: 1px solid #d8dde6; /* Optional: Add a divider below the header */
+  background-color: #f4f6f9; /* Optional: Light background color for header */
+}
+
+.marqembed .slds-modal__content {
+  flex: 1; /* Allow the content to grow and fill available space */
+  display: flex; /* Set to Flexbox for child elements */
+  justify-content: center; /* Center the iframe */
+  align-items: center; /* Center the iframe */
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  overflow: hidden;
+}
+
+.marqembed iframe {
+  flex: 1; /* Allow iframe to grow and fill the available space */
+  max-width: 100%; /* Prevent overflow horizontally */
+  max-height: 100%; /* Prevent overflow vertically */
+  width: 100%;
+  height: 100%;
+  border: none; /* Remove borders */
+}
+
+.center-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.customLogoButton {
+  background-color: #fff;
+  border: 1px solid #c8cfd9;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  cursor: pointer;
+  height: 60px;
+  color: #000;
+  transition: background-color 0.3s ease;
+}
+
+.customLogoButton:hover {
+  background-color: #e8eef8;
+}
+
+.buttonImage {
+  width: auto;
+  height: 100%;
+  max-width: 40px;
+  margin-right: 10px;
+}
+
+.buttonText {
+  white-space: nowrap;
+}
+
+.no-border {
+  border: none;
+}
+
+.auth-modal-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-modal-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.custom-modal-width {
+  max-width: 400px !important;
+  margin: 0 auto;
+  height: auto;
+}
+
+.custom-modal-width .slds-modal__container {
+  height: auto;
+  width: 100%;
+}

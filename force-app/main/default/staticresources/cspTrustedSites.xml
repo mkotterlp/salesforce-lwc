@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<force:contentSecurityPolicy xmlns:force="http://soap.sforce.com/2006/04/metadata">
+    <allowAccess>
+        <allowedDomain>https://app.marq.com</allowedDomain>
+        <allowedDomain>https://marq-salesforce.fastgenapp.com</allowedDomain>
+        <allowedDomain>https://marqsocial.web.app</allowedDomain>
+        <allowedDomain>https://users.app.marq.com</allowedDomain>
+        <allowedDomain>https://pdf-service-lucidpress-com.s3.amazonaws.com</allowedDomain>
+        <allowedDomain>https://propelrealestate.us.auth0.com</allowedDomain>
+        <allowedDomain>https://thumbs.app.marq.com</allowedDomain>
+        <allowedDomain>https://info.marq.com</allowedDomain>
+    </allowAccess>
+</force:contentSecurityPolicy>

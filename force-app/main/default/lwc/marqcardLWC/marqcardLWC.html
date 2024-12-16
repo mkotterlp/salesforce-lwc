@@ -1,0 +1,878 @@
+<template>
+  <lightning-card>
+    <div class="card-container">
+    <div class="slds-p-horizontal_small">
+      <template if:true={isInitializing}>
+        <div class="spinner-container">
+          <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+      </template>
+      <template if:false={isInitializing}>
+      <template if:false={showContent}>
+        <div class="center-button-container">
+          <button class="customLogoButton" onclick={handleAuthorizeClick}>
+            <svg
+              width="28"
+              height="24"
+              viewBox="0 0 28 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19.9246 0.564723V23.7154C19.9246 23.8732 19.7977 24 19.64 24H14.6592C14.5014 24 14.3746 23.8732 14.3746 23.7154V17.558C14.3746 17.4474 14.2567 17.3811 14.1608 17.4342C12.7321 18.2407 11.1205 18.6654 9.46463 18.6654C4.24647 18.6654 0 14.4779 0 9.33194C0 4.18603 4.24501 0 9.46317 0C11.119 0 12.7321 0.424648 14.1594 1.23119C14.2552 1.28574 14.3732 1.21791 14.3732 1.1088V0.564723C14.3732 0.408429 14.5 0.28015 14.6577 0.28015H19.6385C19.7963 0.28015 19.9231 0.408429 19.9231 0.564723H19.9246ZM14.3717 9.33342C14.3717 6.97278 12.71 5.05302 10.3154 5.05302C7.92086 5.05302 5.97456 6.97278 5.97456 9.33342C5.97456 11.694 7.92086 13.6138 10.3154 13.6138C12.71 13.6138 14.3717 11.694 14.3717 9.33342"
+                fill="#0DA39F"
+              ></path>
+              <path
+                d="M27.3647 17.2351H21.4462C21.2619 17.2351 21.113 17.384 21.113 17.5683V23.6063C21.113 23.9042 21.4757 24.0531 21.6851 23.8393L27.6051 17.8013C27.8115 17.5905 27.6626 17.2336 27.3662 17.2336"
+                fill="#F15758"
+              ></path>
+            </svg>
+            <span class="buttonText" style="margin-left: 10px"
+              >Connect Marq</span
+            >
+          </button>
+        </div>
+      </template>
+      <template if:true={showContent}>
+
+        <!-- <template if:true={adminsettings}>
+        <template if:true={isAdmin}>
+          <div class="slds-box slds-m-bottom_small admincontrols">
+            <lightning-button 
+            variant="neutral" 
+            icon-name="utility:settings" 
+            icon-position="left" 
+            label="Modify filters/data" 
+            onclick={handleAdminAction}>
+          </lightning-button>
+          </div>
+        </template>
+      </template> -->
+
+      <template if:false={accountExists}>
+          <div class="slds-box slds-m-bottom_small admincontrols">
+            <lightning-button 
+            variant="neutral" 
+            icon-name="utility:settings" 
+            icon-position="left" 
+            label="Connect Marq Account Data" 
+            onclick={handleAccountAction}>
+          </lightning-button>
+          </div>
+      </template>
+
+        <div class="logo-container">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="logo-image"
+            width="183"
+            height="50"
+            viewBox="0 0 183 50"
+            fill="none"
+          >
+            <path
+              d="M55.251 16.2449V37.133C55.251 37.4616 54.9836 37.7288 54.6578 37.7288H43.5788C43.2499 37.7288 42.9856 37.4647 42.9856 37.133V16.8284C42.9856 15.4496 42.9088 13.8712 42.3279 12.5967C42.0636 12.0563 41.7102 11.6079 41.2861 11.2763C40.5916 10.7327 39.6942 10.4686 38.5448 10.4686C36.4058 10.4686 34.7524 11.2026 34.2238 12.3848C33.6245 13.6685 33.6245 15.4189 33.6245 16.8284V37.133C33.6245 37.4616 33.3571 37.7288 33.0283 37.7288H22.2473C21.9185 37.7288 21.6511 37.4647 21.6511 37.1361L21.6265 16.8284C21.6265 15.4496 21.5497 13.8712 20.9719 12.5967C20.7076 12.0563 20.3542 11.6079 19.927 11.2763C19.2324 10.7327 18.335 10.4686 17.1856 10.4686C15.0467 10.4686 13.3932 11.2026 12.8646 12.3848C12.2654 13.6685 12.2654 15.4189 12.2654 16.8284V37.133C12.2654 37.4616 11.998 37.7288 11.6722 37.7288H0.593138C0.2643 37.7288 0 37.4647 0 37.133V1.19765C0 0.869068 0.2643 0.604972 0.593138 0.604972H10.9746C11.3034 0.604972 11.5677 0.869068 11.5677 1.19765V2.19876C11.5677 2.43521 11.8351 2.57647 12.0318 2.44136C20.4003 -3.31346 28.5444 3.07396 28.6304 3.14459C28.9285 3.37797 29.2113 3.62671 29.4694 3.8816C29.6938 4.10884 29.9089 4.32994 30.1118 4.55412C30.3576 4.82435 30.7817 4.809 31.0122 4.52648C31.633 3.76797 32.4044 3.05553 33.2834 2.426C34.4205 1.61836 35.6498 1.01954 36.836 0.694028C43.8461 -1.69511 49.9312 3.09545 49.9896 3.14459C50.2877 3.37797 50.5673 3.62671 50.8255 3.8816C54.6117 7.68948 55.251 10.7726 55.251 16.2449Z"
+              fill="#0DA39F"
+            />
+            <path
+              d="M99.7302 1.17615V37.1146C99.7302 37.4432 99.4659 37.7073 99.137 37.7073H88.7556C88.4268 37.7073 88.1625 37.4432 88.1625 37.1146V36.568C88.1625 36.3377 87.9166 36.1995 87.7168 36.31C84.7419 37.9929 81.3798 38.8773 77.9285 38.8773C67.0523 38.8773 58.2013 30.156 58.2013 19.4386C58.2013 8.72128 67.0492 0 77.9254 0C81.3767 0 84.7389 0.884412 87.7138 2.56418C87.9135 2.6778 88.1594 2.53654 88.1594 2.3093V1.17615C88.1594 0.847561 88.4237 0.580395 88.7525 0.580395H99.134C99.4628 0.580395 99.7271 0.847561 99.7271 1.17615H99.7302ZM88.1563 19.4386C88.1563 14.5222 84.6928 10.5239 79.7018 10.5239C74.7108 10.5239 70.6541 14.5222 70.6541 19.4386C70.6541 24.3551 74.7108 28.3534 79.7018 28.3534C84.6928 28.3534 88.1563 24.3551 88.1563 19.4386Z"
+              fill="#0DA39F"
+            />
+            <path
+              d="M125.106 1.2253L124.753 9.90973C124.737 10.2506 124.445 10.5055 124.107 10.4778C123.09 10.3826 121.059 10.2475 119.86 10.5362C118.523 10.8586 117.752 11.8874 117.53 12.3849C116.928 13.6685 116.928 14.8047 116.928 16.2419V37.1361C116.928 37.4647 116.664 37.7288 116.335 37.7288H105.256C104.927 37.7288 104.663 37.4647 104.663 37.1361V1.19766C104.663 0.869076 104.927 0.60498 105.256 0.60498H115.637C115.966 0.60498 116.231 0.869076 116.231 1.19766V2.23562C116.231 2.46593 116.486 2.60719 116.682 2.48743C119.141 0.958131 122.054 0.641831 124.507 0.611122C124.848 0.60498 125.121 0.887501 125.106 1.22837"
+              fill="#0DA39F"
+            />
+            <path
+              d="M166.789 1.19153V49.4073C166.789 49.7359 166.524 50 166.195 50H155.814C155.485 50 155.221 49.7359 155.221 49.4073V36.5834C155.221 36.353 154.975 36.2149 154.775 36.3254C151.797 38.0052 148.438 38.8896 144.987 38.8896C134.111 38.8896 125.26 30.1683 125.26 19.4509C125.26 8.73359 134.111 0.0153809 144.987 0.0153809C148.438 0.0153809 151.8 0.899793 154.775 2.57956C154.975 2.69318 155.221 2.55192 155.221 2.32468V1.19153C155.221 0.866013 155.485 0.598847 155.814 0.598847H166.195C166.524 0.598847 166.789 0.866013 166.789 1.19153ZM155.218 19.454C155.218 14.5375 151.754 10.5393 146.763 10.5393C141.772 10.5393 137.716 14.5375 137.716 19.454C137.716 24.3705 141.772 28.3688 146.763 28.3688C151.754 28.3688 155.218 24.3705 155.218 19.454Z"
+              fill="#0DA39F"
+            />
+            <path
+              d="M182.299 35.9108H169.963C169.579 35.9108 169.269 36.2209 169.269 36.6048V49.18C169.269 49.8004 170.025 50.1105 170.461 49.6652L182.8 37.09C183.231 36.6509 182.92 35.9077 182.302 35.9077"
+              fill="#F15758"
+            />
+          </svg>
+          <div class="beta-label">Beta</div>
+        </div>
+
+        <div class="action-button-container">
+          <!-- Logout Button -->
+         <!-- Logout Button -->
+<button class="logout-button" onclick={handleLogout} title="Logout">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 4.5a.5.5 0 0 1 .5-.5h9A2.5 2.5 0 0 1 21 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-9a.5.5 0 0 1 0-1h9a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 18.5 5h-9a.5.5 0 0 1-.5-.5ZM6.854 8.646a.5.5 0 0 1 0 .708L4.707 11.5H15.5a.5.5 0 0 1 0 1H4.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0Z"></path></svg>
+</button>
+
+<!-- Sync Button -->
+<button class="sync-button" onclick={handleForceSyncTemplates} title="Force Resync">
+  <svg 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    class={syncIconClass}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M14.735 2.675a.5.5 0 0 0-.891.454l.66 1.298A8 8 0 0 0 4 12.027a.5.5 0 1 0 1.001 0 7 7 0 0 1 9.426-6.568l-1.598.81a.5.5 0 0 0 .453.892l2.524-1.28a.5.5 0 0 0 .22-.673l-1.29-2.533ZM20 12.027a.5.5 0 0 0-1 0 7 7 0 0 1-7 7c-.794 0-1.568-.195-2.304-.491l1.604-.725a.5.5 0 1 0-.412-.911l-2.594 1.172a.5.5 0 0 0-.248.664l1.18 2.57a.5.5 0 1 0 .908-.417l-.62-1.35c.77.29 1.607.488 2.486.488a8 8 0 0 0 8-8Z" fill="currentColor"/>
+  </svg>
+</button>
+
+        </div>
+        
+        
+
+    
+        
+<div class="search-section">
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search"
+            oninput={handleSearch}
+          />
+          <button class="search-button" type="submit">
+            <svg
+              class="search-icon slds-icon slds-icon-text-default slds-icon_x-small"
+              focusable="false"
+              data-key="search"
+              aria-hidden="true"
+              viewBox="0 0 520 520"
+              part="icon"
+            >
+              <g>
+                <path
+                  d="M496 453L362 320a189 189 0 10-340-92 190 190 0 00298 135l133 133a14 14 0 0021 0l21-21a17 17 0 001-22zM210 338a129 129 0 11130-130 129 129 0 01-130 130z"
+                  fill="white"
+                ></path>
+              </g>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <template if:true={activeFilters.length}>
+       <div class="filter-container">
+        <div class="inline-container">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.998 3.993H4.002v.632l5.527 6.33c.315.362.488.823.488 1.3v5.09l4.012 2.66v-7.74c0-.471.17-.928.478-1.287l5.47-6.363.021-.622ZM4.002 3A.997.997 0 0 0 3 3.993v.632c0 .239.087.47.244.65l5.527 6.33c.158.181.244.412.244.65v5.09c0 .33.167.64.445.824l4.011 2.662c.666.441 1.56-.032 1.56-.826v-7.74c0-.236.084-.464.239-.643l5.47-6.363a.988.988 0 0 0 .238-.61L21 4.027A.997.997 0 0 0 20 3H4.001Z"></path>
+          </svg>
+          <span class="inline-text">Active filters</span>
+        </div>        
+        <div class="active-filters-container slds-m-bottom_small">
+          <template for:each={activeFilters} for:item="filter" for:index="index">
+            <span key={filter.field} class="active-filter-tag">
+              {filter.value}
+              <button class="remove-filter-button" data-index={index} onclick={handleRemoveFilter}>
+                &times;
+              </button>
+            </span>
+          </template>
+        </div>
+      </div>
+      </template>
+      
+      
+      
+      
+
+        <template if:false={templatesprocessed}>
+          <div class="spinner-container">
+            <lightning-spinner
+              alternative-text="Loading"
+              size="small"
+            ></lightning-spinner>
+          </div>
+        </template>
+
+        <template if:true={templatesprocessed}>
+          <!-- Projects Tab -->
+          <div class="templateslist">
+            <!-- Created Projects Section -->
+
+            <div class="content-body slds-p-horizontal_small">
+              <template if:true={templatesprocessed}>
+                <template if:true={hasProjects}>
+                  <div class="content-title">
+                    <h2 class="relevant-content-title">Created Projects</h2>
+                  </div>
+                </template>
+                <div
+                  class="template-container project-contain"
+                  onscroll={handleScroll}
+                >
+                  <div class="scroll-content">
+                    <template if:true={displayedProjects.length}>
+                      <template
+                        for:each={displayedProjects}
+                        for:item="template"
+                      >
+                        <template if:true={template.hasRelatedContent}>
+                          <!-- Render project item -->
+                          <div
+                            key={template.id}
+                            class="item-wrapper slds-box slds-m-bottom_small slds-grid slds-align_absolute-center template-row"
+                          >
+                          <div class="template-image-container">
+                            <img
+                              src={template.image}
+                              alt={template.name}
+                              class="template-image"
+                              style="cursor: pointer"
+                              onerror={handleImageError}
+                              onclick={handleImageClick}
+                              data-id={template.id}
+                              data-name={template.name}
+                              data-project-id={template.projectId}
+                              data-has-related-content={template.hasRelatedContent}
+                            />
+                            </div>
+                            <!-- <svg class="default-icon custom-icon" hidden></svg> -->
+                            <div class="slds-m-left_small slds-grow">
+                              <h3
+                                class="template-title"
+                                style="cursor: pointer"
+                                onclick={handleTitleClick}
+                                data-id={template.id}
+                                data-name={template.name}
+                                data-project-id={template.projectId}
+                                data-has-related-content={template.hasRelatedContent}
+                              >
+                                {template.name}
+                              </h3>
+                              <template if:true={template.lastModifiedDate}>
+                                <p class="template-modified-date">
+                                  {template.lastModifiedDate}
+                                </p>
+                              </template>
+                              <template if:true={template.publicLink}>
+                                <div class="copy-link-container">
+                                    <a href={template.publicLink} target="_blank" class="public-link">
+                                        Shareable Link
+                                    </a>
+                                    <svg class="copy-icon"
+                                        onclick={handleCopyPublicLink} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"></path><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"></path></svg>
+                                </div>
+                            </template>
+                            </div>
+                            <div class="button-container">
+                              <lightning-button-menu
+                                alternative-text="Show actions"
+                                icon-name="utility:threedots"
+                                menu-alignment="auto"
+                                onselect={handleMenuSelect}
+                                data-id={template.id}
+                                data-name={template.name}
+                                data-project-id={template.projectId}
+                                data-content-version-id={template.contentVersionId}
+                                data-has-related-content={template.hasRelatedContent}
+                                data-public-link={template.publicLink}
+                                title="Actions"
+                              >
+                                <lightning-menu-item
+                                  label={template.buttonLabel}
+                                  value="edit"
+                                  icon-name="utility:edit"
+                                ></lightning-menu-item>
+
+                                <lightning-menu-item
+                                  label="Present"
+                                  value="present"
+                                  icon-name="utility:metrics"
+                                ></lightning-menu-item>
+
+                                <!-- Show "Copy Public Link" only if publicLink exists -->
+                                <template if:true={template.publicLink}>
+                                  <lightning-menu-item
+                                    label="Copy Public Link"
+                                    value="copyPublicLink"
+                                    icon-name="utility:link"
+                                  ></lightning-menu-item>
+                                </template>
+
+                                <!-- Show "Public Link" if publicLink is not present -->
+                                <!-- <template if:false={template.publicLink}>
+                                                            <lightning-menu-item label={template.linkLabel} value="createPublicLink" icon-name="utility:link"></lightning-menu-item>
+                                                        </template> -->
+
+                                <template if:true={template.publicLink}>
+                                  <lightning-menu-item
+                                    label="View"
+                                    value="view"
+                                    icon-name="utility:preview"
+                                  ></lightning-menu-item>
+                                </template>
+
+                                <lightning-menu-item
+                                  label="Delete"
+                                  value="delete"
+                                  icon-name="utility:delete"
+                                ></lightning-menu-item>
+                              </lightning-button-menu>
+                            </div>
+                          </div>
+                        </template>
+                      </template>
+                    </template>
+                    <!-- No Projects Found -->
+                    <!-- <template if:false={hasProjects}>
+                                        <div class="slds-m-left_small slds-grow defaultrow">
+                                            <h3>No projects found</h3>
+                                        </div>
+                                    </template> -->
+                  </div>
+                </div>
+              </template>
+              <!-- <template if:true={isCheckingContent}>
+                                <lightning-spinner alternative-text="Checking content" size="small"></lightning-spinner>
+                            </template> -->
+            </div>
+
+            <!-- Templates Tab -->
+            <div>
+              <!-- Available Templates Section -->
+
+              <div class="content-body slds-p-horizontal_small">
+                <template if:true={templatesprocessed}>
+                  <template if:true={hasTemplates}>
+                    <div class="content-title">
+                      <h2 class="relevant-content-title">Recommended Templates</h2>
+                    </div>
+                  </template>
+
+                  
+
+                  <div class="template-container" onscroll={handleScroll}>
+                    <div class="scroll-content">
+                      <template if:true={showFilteredTemplates}>
+                        <template
+                          for:each={displayedTemplates}
+                          for:item="template"
+                        >
+                          <template if:false={template.hasRelatedContent}>
+                            <!-- Render template item -->
+                            <div
+                              key={template.id}
+                              class="item-wrapper slds-box slds-m-bottom_small slds-grid slds-align_absolute-center template-row"
+                            >
+                            <div class="template-image-container">
+                              <img
+                                src={template.image}
+                                alt={template.name}
+                                class="template-image"
+                                style="cursor: pointer"
+                                onerror={handleImageError}
+                                onclick={handleImageClick}
+                                data-id={template.id}
+                                data-name={template.name}
+                                data-project-id={template.projectId}
+                                data-has-related-content={template.hasRelatedContent}
+                              />
+                              </div>
+                              <!-- <svg
+                                class="default-icon custom-icon"
+                                hidden
+                              ></svg> -->
+                              <div class="slds-m-left_small slds-grow">
+                                <h3
+                                  class="template-title"
+                                  style="cursor: pointer"
+                                  onclick={handleTitleClick}
+                                  data-id={template.id}
+                                  data-name={template.name}
+                                  data-project-id={template.projectId}
+                                  data-has-related-content={template.hasRelatedContent}
+                                >
+                                  {template.name}
+                                </h3>
+                                <p 
+                                onclick={openModal}
+                                data-id={template.id}
+                                data-name={template.name}
+                                data-project-id={template.projectId}
+                                data-has-related-content={template.hasRelatedContent}                        
+                                ><svg
+                                  class="create-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M12 7a.5.5 0 01.5.5v4h4a.5.5 0 110 1h-4v4a.5.5 0 01-1 0v-4h-4a.5.5 0 010-1h4v-4A.5.5 0 0112 7z"
+                                  ></path>
+                                  <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-1 0a8 8 0 11-16 0 8 8 0 0116 0z"
+                                  ></path>
+                                </svg><span class="create-project">Create Project</span></p>
+                              </div>
+                              <!-- <div class="button-container">
+                                <button
+                                  class="slds-button slds-button_brand"
+                                  onclick={openModal}
+                                  data-id={template.id}
+                                  data-name={template.name}
+                                  data-project-id={template.projectId}
+                                  data-has-related-content={template.hasRelatedContent}
+                                >
+                                  <svg
+                                    class="custom-icon"
+                                    viewBox="0 0 24 24"
+                                    width="24"
+                                    height="24"
+                                    fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M12 7a.5.5 0 01.5.5v4h4a.5.5 0 110 1h-4v4a.5.5 0 01-1 0v-4h-4a.5.5 0 010-1h4v-4A.5.5 0 0112 7z"
+                                    ></path>
+                                    <path
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-1 0a8 8 0 11-16 0 8 8 0 0116 0z"
+                                    ></path>
+                                  </svg>
+
+                                  {template.buttonLabel}
+                                </button>
+                              </div> -->
+                            </div>
+                          </template>
+                        </template>
+                      </template>
+                      <template if:true={noResultsFound}>
+                        <div class="slds-m-around_medium slds-text-align_center">
+                          <div class="slds-icon_container slds-icon-utility-search slds-m-bottom_medium" title="No results">
+                            <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <img
+                    src={img_emptyState}
+                    alt="No templates"
+                    style="max-width: 200px; height: auto"
+                  />
+                </div>
+                          </div>
+                          <p class="slds-text-color_weak slds-text-heading_medium">No projects or templates found</p>
+                          <p class="slds-text-color_weak">Try adjusting your filters or search criteria.</p>
+                          <!-- <button class="slds-button slds-button_outline-brand slds-m-top_small" onclick={handleShowFilters}>
+                            Show Applied Filters
+                          </button> -->
+                        </div>
+                      </template>
+                      
+                      <!-- <template if:false={templateisLoading}>
+                                    <template if:false={displayedTemplates.length}>
+                                        <div class="slds-m-around_medium">
+                                            <h3>No templates or projects match.</h3>
+                                        </div>
+                                    </template>
+                                </template> -->
+
+                      <!-- No Templates Found -->
+                      <!-- <template if:false={hasTemplates}>
+                                    <div class="slds-m-left_small slds-grow defaultrow">
+                                        <h3>No templates found</h3>
+                                    </div>
+                                </template> -->
+                    </div>
+                  </div>
+                </template>
+                <!-- <template if:true={isCheckingContent}>
+                            <lightning-spinner alternative-text="Checking content" size="small"></lightning-spinner>
+                        </template> -->
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
+    </template>
+    </div>
+  </div>
+    <template if:true={isModalOpen}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open marqembed"
+      >
+        <div class="slds-modal__container">
+          <header
+            class="slds-modal__header slds-grid slds-grid_align-spread slds-theme_shade"
+          >
+            <!-- <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{selectedTemplateName}</h2> -->
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              Marq
+            </h2>
+            <button
+              class="slds-modal__close nobackground"
+              title="Close"
+              onclick={closeModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-1"
+          >
+            <template if:true={isLoading}>
+              <!-- <div class="spinner-container">
+                                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                                <div class="loading-text">
+                                    {loadingText}
+                                </div>
+                            </div>                             -->
+
+              <div class="slds-spinner_container">
+                <div class="slds-spinner-parent">
+                  <div
+                    role="status"
+                    class="slds-spinner slds-spinner_medium slds-spinner_brand"
+                  >
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                  </div>
+                </div>
+                <div class="custom-loading-text">{loadingText}</div>
+              </div>
+            </template>
+            <template if:false={isLoading}>
+              <iframe
+                src={iframeSrc}
+                width="100%"
+                height="100%"
+                class="no-border"
+                style="height: 100%; width: 100%; border: none"
+              ></iframe>
+            </template>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isSettingsModalOpen}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-04"
+        aria-modal="true"
+        aria-describedby="modal-content-id-4"
+        class="slds-modal slds-fade-in-open marqembed"
+      >
+        <div class="slds-modal__container">
+          <header
+            class="slds-modal__header slds-grid slds-grid_align-spread slds-theme_shade"
+          >
+            <!-- <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{selectedTemplateName}</h2> -->
+            <h2 id="modal-heading-04" class="slds-modal__title slds-hyphenate">
+              Marq
+            </h2>
+            <button
+              class="slds-modal__close nobackground"
+              title="Close"
+              onclick={closeSettingsModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-4"
+          >
+        
+              <iframe
+                src={linkUrl}
+                width="100%"
+                height="100%"
+                class="no-border"
+                style="height: 100%; width: 100%; border: none"
+              ></iframe>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isPublicLinkModalOpen}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-03"
+        aria-modal="true"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header
+            class="slds-modal__header slds-grid slds-grid_align-spread slds-theme_shade"
+          >
+            <!-- <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{selectedTemplateName}</h2> -->
+            <div>
+              <h2
+                id="modal-heading-03"
+                class="slds-modal__title slds-hyphenate"
+              >
+                Project saved
+              </h2>
+            </div>
+            <button
+              class="slds-modal__close nobackground"
+              title="Close"
+              onclick={closePublicLinkModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+          </header>
+
+          <div class="slds-modal__content slds-p-around_medium">
+            <div class="main-modal-image">
+              <img
+                src={img_copyPasteEmail}
+                alt="Copy paste"
+                style="max-width: 400px; height: auto"
+              />
+            </div>
+
+            <h2 class="pspace" style="font-size: 18px; font-weight: 500">
+              We've generated a shareable link that you can include in your
+              emails.
+            </h2>
+
+            <p class="pspace">
+              This link provides prospects or clients with seamless access to
+              your content, keeps them updated with any changes you make to the
+              file, and allows you to track their engagement. Note, this can be
+              pasted in any textbox that supports rich text with anchored links.
+            </p>
+
+            <!-- FAQ Accordion -->
+            <lightning-accordion
+              class="custom-accordion"
+              allow-multiple-sections-open
+            >
+              <lightning-accordion-section
+                label="How can I make changes to my project?"
+                name="faq-1"
+              >
+                <p>
+                  To make changes to your project, go to your Created Projects >
+                  Hover over your project > select
+                  <lightning-icon
+                    icon-name="utility:connected_apps"
+                    size="x-small"
+                    class="x-small"
+                  ></lightning-icon>
+                  > Click <i>Edit</i>. Any time you click <i>Save</i> within the
+                  editor, the new version will reflect in your public link
+                </p>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <img
+                    src={img_faqEditProjects}
+                    alt="Copy paste"
+                    style="max-width: 400px; height: auto"
+                  />
+                </div>
+              </lightning-accordion-section>
+              <lightning-accordion-section
+                label="How can I track engagement?"
+                name="faq-2"
+              >
+                <p>
+                  To track engagement (such as views and downloads), go to your
+                  Created Projects > Hover over your project > select
+                  <lightning-icon
+                    icon-name="utility:connected_apps"
+                    size="x-small"
+                    class="x-small"
+                  ></lightning-icon>
+                  > Click <i>View</i>
+                </p>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <img
+                    src={img_faqViewEngagement}
+                    alt="Copy paste"
+                    style="max-width: 400px; height: auto"
+                  />
+                </div>
+              </lightning-accordion-section>
+              <lightning-accordion-section
+                label="How can I access my public link again?"
+                name="faq-3"
+              >
+                <p>
+                  To access the link again, go to your Created Projects > Hover
+                  over your project > select
+                  <lightning-icon
+                    icon-name="utility:connected_apps"
+                    size="x-small"
+                    class="x-small"
+                  ></lightning-icon>
+                  > Click <i>Copy Public Link</i>
+                </p>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <img
+                    src={img_faqCopyPublicLink}
+                    alt="Copy paste"
+                    style="max-width: 400px; height: auto"
+                  />
+                </div>
+              </lightning-accordion-section>
+              <lightning-accordion-section
+                label="What if I want to start over with a new version?"
+                name="faq-4"
+              >
+                <p>
+                  To create a completely new version, go to your Created
+                  Projects > Hover over your project > select
+                  <lightning-icon
+                    icon-name="utility:connected_apps"
+                    size="x-small"
+                    class="x-small"
+                  ></lightning-icon>
+                  > Click <i>Delete</i> and then find the template and create
+                  from it again in your Brand Templates.
+                </p>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <img
+                    src={img_faqDeleteProject}
+                    alt="Copy paste"
+                    style="max-width: 400px; height: auto"
+                  />
+                </div>
+              </lightning-accordion-section>
+            </lightning-accordion>
+          </div>
+
+          <footer class="slds-modal__footer">
+            <lightning-button
+              label="View"
+              variant="neutral"
+              onclick={handleViewPublicLink}
+              data-public-link={currentPublicLink}
+              title="View"
+              icon-name="utility:preview"
+              icon-position="left"
+            >
+            </lightning-button>
+
+            <lightning-button
+              label="Copy public link to clipboard"
+              variant="brand"
+              class="spaced-button"
+              onclick={handleModalCopyPublicLink}
+              data-public-link={currentPublicLink}
+              data-template-name={currentTemplateName}
+              title="Copy Public Link"
+              icon-name="utility:copy"
+              icon-position="left"
+            >
+            </lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isAuthCodeModalOpen}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-02"
+        aria-modal="true"
+        aria-describedby="modal-content-id-2"
+        class="slds-modal slds-fade-in-open custom-modal-width"
+      >
+        <div class="slds-modal__container custom-modal-width">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeAuthModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-02" class="slds-modal__title slds-hyphenate">
+              Enter the Marq Verification Code
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium custom-modal-width"
+            id="modal-content-id-2"
+          >
+            <input
+              type="text"
+              class="auth-modal-input"
+              placeholder="Paste Code"
+              oninput={handleAuthCodeChange}
+            />
+            <button
+              class="slds-button slds-button_brand"
+              onclick={handleAuthCodeSubmit}
+            >
+              Submit
+            </button>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning-button
+              variant="neutral"
+              label="Close"
+              onclick={closeAuthModal}
+            ></lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+  </lightning-card>
+</template>

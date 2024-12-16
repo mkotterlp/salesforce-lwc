@@ -1,0 +1,22 @@
+{
+  "orgName": "My Scratch Org",
+  "edition": "Enterprise",
+  "namespace": "Marq",
+  "features": [
+    "LightningSalesConsole"
+  ],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "quoteSettings": {
+      "enableQuote": true
+    },
+    "contentSettings": {
+      "enableContent": true
+    }
+  }
+}

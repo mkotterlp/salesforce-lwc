@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <frameHeight>800</frameHeight>
+    <hasSidebar>false</hasSidebar>
+    <label>Marq</label>
+    <motif>Custom20: Airplane</motif>
+    <url>https://app.marq.com/documents/iframe?returnUrl=https%3A%2F%2Fapp.marq.com%2Fdocuments%2Fexternal%3Fcallback%26%23%2Fdocuments%3Ffolder_id%3Dhome</url>
+    <urlEncodingKey>UTF-8</urlEncodingKey>
+</CustomTab>
