@@ -12,8 +12,8 @@
 
             <property name="showfilters" type="Boolean" label="Show filters" default="false" description="Displays the active filters when filters are applied"/>
 
-            <property name="textboxFields" type="String" label="SFDC Fields to Use" description="Add each SFDC field you want to use in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g. 'Opportunity.StageName, Opportunity.Industry, Opportunity.category__c'" />
-            <property name="textboxFilters" type="String" label="Corresponding Marq Filters" description="Add each corresponding Marq filter you want to use in the format of FILTER1, FILTER2, FILTER3. e.g. 'SF Stage, SF Industry, SF Category'" />
+            <property name="textboxFields" type="String" label="Salesforce Filters" description="Add each SFDC field you want to use in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g. 'Opportunity.StageName, Opportunity.Industry, Opportunity.category__c'" />
+            <property name="textboxFilters" type="String" label="Marq Filters" description="Add each corresponding Marq filter you want to use in the format of FILTER1, FILTER2, FILTER3. e.g. 'SF Stage, SF Industry, SF Category'" />
             <property name="filterLogic" type="String" label="Custom Filter Logic" description="Define custom filter logic using field numbers. e.g., '(1 or 2) AND 3'" />
             <property name="customFields" type="String" label="Custom Fields" description="Enter the fields you want to include in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g., 'Opportunity.Name, Opportunity.StageName, Account.Industry'" />
             <property name="customSAMLlogin" type="String" label="Custom SAML domain" description="Only set if you've configured a custom sign in option with Marq" />
