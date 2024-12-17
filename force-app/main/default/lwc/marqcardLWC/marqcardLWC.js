@@ -17,6 +17,7 @@ import CURRENT_USER_ID from "@salesforce/user/Id";
 import USER_EMAIL from "@salesforce/schema/User.Email";
 import getAuthorizationUrl from "@salesforce/apex/MarqOAuthHandler.getAuthorizationUrl";
 import getAccount from '@salesforce/apex/MarqDataSender.getAccount';
+import getProducts from '@salesforce/apex/MarqDataSender.getProductsByOpportunityId';
 import getSFDCAuthorizationUrl from "@salesforce/apex/MarqOAuthHandler.getSFDCAuthorizationUrl";
 import sendDataToEndpoint from "@salesforce/apex/MarqDataSender.sendDataToEndpoint";
 import createDataset from "@salesforce/apex/MarqDataSender.createDataset";
@@ -69,6 +70,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   @track templates = [];
   @track userExists = false;
   @track accountExists = false;
+  @track products = [];
   @track dataExists = false;
   @track sfdcOauthExists = false;
   @track allTemplates = [];
@@ -208,6 +210,8 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     }
   }
 
+
+
   @wire(getRecord, {
     recordId: CURRENT_USER_ID,
     fields: [USER_EMAIL],
@@ -226,6 +230,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     return this.accountId ? this.accountId : null;
   }
 
+
   async fetchAccountData() {
     if (!this.accountId) {
       console.warn('No AccountId found to fetch account data.');
@@ -243,7 +248,47 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
       console.error('Error fetching account data:', error);
     }
   }
+
+  // @wire(getProducts, { opportunityId: '$recordId' })
+  // wiredProducts({ error, data }) {
+  //   if (data) {
+  //     this.products = data.map(product => ({
+  //       id: product.Id,
+  //       name: product.PricebookEntry.Product2.Name,
+  //       quantity: product.Quantity,
+  //       price: product.UnitPrice,
+  //       currencyIsoCode: product.CurrencyIsoCode || 'USD' // Default to 'USD' if not present
+  //     }));
+  //     this.error = undefined;
+  //     this.triggerSendData();
+  //   } else if (error) {
+  //     this.error = error;
+  //     this.products = [];
+  //   }
+  // }
   
+
+  async fetchOpportunityProducts() {
+    try {
+      const products = await getProducts({ opportunityId: this.recordId });
+      this.products = products.map(product => ({
+        id: product.Id,
+        name: product.PricebookEntry.Product2.Name,
+        quantity: product.Quantity,
+        price: product.UnitPrice,
+        date: product.ServiceDate,
+        currencyIsoCode: product.CurrencyIsoCode || 'USD' // Default to 'USD' if not present
+      }));
+  
+      console.log('Fetched Products:', this.products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      this.error = error;
+    }
+  }
+  
+  
+
 
   @wire(getRecord, {
     recordId: "$recordId",
@@ -331,6 +376,7 @@ async handleAsyncOperations() {
           this.dataExists = true;
           this.isMarqDataPresent = true;
           this.triggerSendData();
+
         } else {
           
           if (!this.isMarqDataPresent) {
@@ -554,12 +600,16 @@ wiredAccount({ error, data }) {
   }
 
   async triggerSendData() {
-    try {
-      await this.sendData();
-    } catch (error) {
-      console.error("Error sending data:", error);
+    if (!this.objectName) {
+        return;
     }
-  }
+    try {
+        await this.sendData();
+    } catch (error) {
+        console.error("Error sending data:", error);
+    }
+}
+
 
   get templatesprocessed() {
     return !this.templateisLoading && !this.isCheckingContent
@@ -826,6 +876,7 @@ copyPublicLinkFromModal() {
     this.isPublicLinkModalOpen = false;
     this.currentPublicLink = '';
 }
+
 
   handleWindowClose() {
     // Perform any cleanup or data refresh actions needed
@@ -2139,21 +2190,60 @@ async handleAdminAction() {
       // Assign the identified image fields to ImageFields
       recordProperties["ImageFields"] = imageFields.join(",");
 
+            // Prepare the schema dynamically based on customFields
+            const schema = [
+              { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
+              { name: "Name", fieldType: "STRING", isPrimary: false, order: 2 },
+              { name: "Logo", fieldType: "STRING", isPrimary: false, order: 3 },
+              { name: "Industry", fieldType: "STRING", isPrimary: false, order: 4 },
+              {
+                name: "Marq User Restriction",
+                fieldType: "STRING",
+                isPrimary: false,
+                order: 5,
+              },
+            ];
+
+     
+            if (this.objectName === "Opportunity") {
+              await this.fetchOpportunityProducts();
+            
+              // Add products dynamically to recordProperties with placeholders
+              for (let i = 0; i < 10; i++) {
+                if (this.products[i]) {
+                  const product = this.products[i];
+            
+                  // Create a currency formatter for the product's currency
+                  const currencyFormatter = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: product.currencyIsoCode,
+                    minimumFractionDigits: 2
+                  });
+            
+                  recordProperties[`Product_${i + 1}_Name`] = product.name;
+                  recordProperties[`Product_${i + 1}_Quantity`] = product.quantity;
+                  recordProperties[`Product_${i + 1}_Price`] = currencyFormatter.format(product.price);
+                  recordProperties[`Product_${i + 1}_Date`] = product.date;
+                } else {
+                  // Placeholder values for missing products
+                  recordProperties[`Product_${i + 1}_Name`] = "";
+                  recordProperties[`Product_${i + 1}_Quantity`] = "";
+                  recordProperties[`Product_${i + 1}_Price`] = "";
+                  recordProperties[`Product_${i + 1}_Date`] = "";
+                }
+              }
+            
+              // Update the schema to include placeholders for 10 products
+              for (let i = 0; i < 10; i++) {
+                schema.push({ name: `Product_${i + 1}_Name`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
+                schema.push({ name: `Product_${i + 1}_Quantity`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
+                schema.push({ name: `Product_${i + 1}_Price`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
+                schema.push({ name: `Product_${i + 1}_Date`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
+              }
+            }
+
       console.log('Final record properties:', JSON.stringify(recordProperties));
 
-      // Prepare the schema dynamically based on customFields
-      const schema = [
-        { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
-        { name: "Name", fieldType: "STRING", isPrimary: false, order: 2 },
-        { name: "Logo", fieldType: "STRING", isPrimary: false, order: 3 },
-        { name: "Industry", fieldType: "STRING", isPrimary: false, order: 4 },
-        {
-          name: "Marq User Restriction",
-          fieldType: "STRING",
-          isPrimary: false,
-          order: 5,
-        },
-      ];
 
       if (this.customFields) {
         const fieldsArray = this.customFields
@@ -2513,6 +2603,11 @@ performSearch(searchTerm) {
   async setupIframeSourceForCreate(templateId, templateTitle) {
     this.iframeSrc = null;
     try {
+
+      if (this.objectName === "Opportunity") {
+        await this.triggerSendData();
+      }
+
       const projectName = this.recordName
         ? `${templateTitle} - ${this.recordName}`
         : templateTitle;
@@ -2622,6 +2717,11 @@ performSearch(searchTerm) {
   async setupIframeSourceForEdit(templateId, projectId) {
     this.iframeSrc = null;
     try {
+
+      if (this.objectName === "Opportunity") {
+        await this.triggerSendData();
+      }
+
       // console.log('Setting up iframe for edit:', templateId, projectId);
       const baseUrl = "https://app.marq.com";
       const samlDomain = this.customSAMLlogin

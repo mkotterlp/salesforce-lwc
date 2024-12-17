@@ -11,6 +11,24 @@ public with sharing class MarqDataSender {
         ];
     }
 
+@AuraEnabled
+public static List<OpportunityLineItem> getProductsByOpportunityId(Id opportunityId) {
+    Boolean multiCurrencyEnabled = UserInfo.isMultiCurrencyOrganization();
+
+    String baseQuery = 'SELECT Id, Quantity, UnitPrice, ServiceDate, PricebookEntry.Product2.Name';
+
+    if (multiCurrencyEnabled) {
+        baseQuery += ', CurrencyIsoCode';
+    }
+
+    baseQuery += ' FROM OpportunityLineItem WHERE OpportunityId = :opportunityId';
+
+    return Database.query(baseQuery);
+}
+
+
+
+
 
         @AuraEnabled(cacheable=true)
     public static String getAccountLogo(Id opportunityId) {
