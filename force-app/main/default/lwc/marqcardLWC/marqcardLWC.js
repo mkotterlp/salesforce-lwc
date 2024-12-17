@@ -1,23 +1,23 @@
 import { LightningElement, api, track, wire } from "lwc";
 import fetchTemplatesfromMarq from "@salesforce/apex/MarqTemplateFetcher.fetchTemplates";
 import fetchAndStoreTemplates from "@salesforce/apex/MarqTemplateFetcher.fetchAndStoreTemplates";
-import img_copyPasteEmail from '@salesforce/resourceUrl/copyPasteEmail';
-import img_faqCopyPublicLink from '@salesforce/resourceUrl/faqCopyPublicLink';
-import img_faqDeleteProject from '@salesforce/resourceUrl/faqDeleteProject';
-import img_faqEditProjects from '@salesforce/resourceUrl/faqEditProjects';
-import img_faqViewEngagement from '@salesforce/resourceUrl/faqViewEngagement';
-import img_emptyState from '@salesforce/resourceUrl/emptyState';
-import img_fallback from '@salesforce/resourceUrl/fallback';
+import img_copyPasteEmail from "@salesforce/resourceUrl/copyPasteEmail";
+import img_faqCopyPublicLink from "@salesforce/resourceUrl/faqCopyPublicLink";
+import img_faqDeleteProject from "@salesforce/resourceUrl/faqDeleteProject";
+import img_faqEditProjects from "@salesforce/resourceUrl/faqEditProjects";
+import img_faqViewEngagement from "@salesforce/resourceUrl/faqViewEngagement";
+import img_emptyState from "@salesforce/resourceUrl/emptyState";
+import img_fallback from "@salesforce/resourceUrl/fallback";
 import {
   getRecord,
   getFieldValue,
-  getRecordNotifyChange,
+  getRecordNotifyChange
 } from "lightning/uiRecordApi";
 import CURRENT_USER_ID from "@salesforce/user/Id";
 import USER_EMAIL from "@salesforce/schema/User.Email";
 import getAuthorizationUrl from "@salesforce/apex/MarqOAuthHandler.getAuthorizationUrl";
-import getAccount from '@salesforce/apex/MarqDataSender.getAccount';
-import getProducts from '@salesforce/apex/MarqDataSender.getProductsByOpportunityId';
+import getAccount from "@salesforce/apex/MarqDataSender.getAccount";
+import getProducts from "@salesforce/apex/MarqDataSender.getProductsByOpportunityId";
 import getSFDCAuthorizationUrl from "@salesforce/apex/MarqOAuthHandler.getSFDCAuthorizationUrl";
 import sendDataToEndpoint from "@salesforce/apex/MarqDataSender.sendDataToEndpoint";
 import createDataset from "@salesforce/apex/MarqDataSender.createDataset";
@@ -42,14 +42,14 @@ import { refreshApex } from "@salesforce/apex";
 import {
   registerRefreshHandler,
   unregisterRefreshHandler,
-  RefreshEvent,
+  RefreshEvent
 } from "lightning/refresh";
 import getRelatedRecords from "@salesforce/apex/MarqDataSender.getRelatedRecords";
 import ACCOUNT_INDUSTRY_FIELD from "@salesforce/schema/Account.Industry";
 import ACCOUNT_LOGO_FIELD from "@salesforce/schema/Account.Logo_URL__c";
 import ACCOUNT_NAME_FIELD from "@salesforce/schema/Account.Name";
-import getOrgId from '@salesforce/apex/MarqembedController.getOrgId';
-import hasAdminPermission from '@salesforce/apex/MarqembedController.hasAdminPermission';
+import getOrgId from "@salesforce/apex/MarqembedController.getOrgId";
+import hasAdminPermission from "@salesforce/apex/MarqembedController.hasAdminPermission";
 
 export default class Marqcard extends NavigationMixin(LightningElement) {
   @track isInitializing = true;
@@ -58,11 +58,11 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   @track deletedFilters = [];
   @api recordId;
   @api buttonLabel = "Create New";
-  @track linkLabel = 'Create Public Link';
-  @track loadingText = 'Syncing Marq with Salesforce';
+  @track linkLabel = "Create Public Link";
+  @track loadingText = "Syncing Marq with Salesforce";
   @track isPublicLinkModalOpen = false;
-  @track currentPublicLink = '';
-  @track currentTemplateName = '';
+  @track currentPublicLink = "";
+  @track currentTemplateName = "";
   @track temporaryPublicLinks = {};
   @track displayedProjects = []; // Related content (projects)
   @track displayedTemplates = []; // Non-related content (templates)
@@ -164,7 +164,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
       this.allTemplates = [];
       this.currentOffset = 0;
 
-    //   console.log("Initializing templates...");
+      //   console.log("Initializing templates...");
 
       // Fetch templates
       try {
@@ -188,7 +188,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
         throw new Error("Template loading failed.");
       }
 
-    //   console.log("Templates initialized and loaded.");
+      //   console.log("Templates initialized and loaded.");
     } catch (error) {
       console.error(
         "Error during template initialization:",
@@ -210,42 +210,35 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     }
   }
 
-
-
   @wire(getRecord, {
     recordId: CURRENT_USER_ID,
-    fields: [USER_EMAIL],
+    fields: [USER_EMAIL]
   })
   wiredUser({ error, data }) {
     if (data) {
       this.userEmail = getFieldValue(data, USER_EMAIL);
-      console.log('User Email:', this.userEmail);
     } else if (error) {
       console.error("Error fetching user data:", error);
     }
   }
-  
 
   get wiredAccountId() {
     return this.accountId ? this.accountId : null;
   }
 
-
   async fetchAccountData() {
     if (!this.accountId) {
-      console.warn('No AccountId found to fetch account data.');
+      console.warn("No AccountId found to fetch account data.");
       return;
     }
-  
+
     try {
       const account = await getAccount({ accountId: this.accountId });
       this.accountname = account.Name;
       this.accountindustry = account.Industry;
       this.accountlogo = account.Logo_URL__c;
-  
-      console.log('Fetched Account Data:', this.accountname, this.accountindustry, this.accountlogo);
     } catch (error) {
-      console.error('Error fetching account data:', error);
+      console.error("Error fetching account data:", error);
     }
   }
 
@@ -266,178 +259,178 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   //     this.products = [];
   //   }
   // }
-  
 
   async fetchOpportunityProducts() {
     try {
       const products = await getProducts({ opportunityId: this.recordId });
-      this.products = products.map(product => ({
+      this.products = products.map((product) => ({
         id: product.Id,
         name: product.PricebookEntry.Product2.Name,
         quantity: product.Quantity,
         price: product.UnitPrice,
         date: product.ServiceDate,
-        currencyIsoCode: product.CurrencyIsoCode || 'USD' // Default to 'USD' if not present
+        currencyIsoCode: product.CurrencyIsoCode || "USD" // Default to 'USD' if not present
       }));
-  
-      console.log('Fetched Products:', this.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
       this.error = error;
     }
   }
-  
-  
-
 
   @wire(getRecord, {
     recordId: "$recordId",
-    fields: ["Opportunity.AccountId"],
+    fields: ["Opportunity.AccountId"]
   })
   wiredOpportunity({ error, data }) {
     if (data) {
       // Retrieve the AccountId from the Opportunity
       this.accountId = getFieldValue(data, "Opportunity.AccountId");
-      console.log("AccountId:", this.accountId); // Debug log
     } else if (error) {
       console.warn("Error fetching opportunity data:", error);
     }
   }
 
   // Separate @wire for Lead records
-@wire(getRecord, { recordId: "$recordId", fields: ["Lead.Company"] })
-wiredLead({ error, data }) {
-  if (data) {
-    this.recordName = getFieldValue(data, "Lead.Company") || "";
-    this.refreshView();
-  } else if (error) {
-    console.warn("Error fetching Lead data:", error);
-  }
-}
-
-handleShowFilters() {
-  const fields = this.textboxFields ? this.textboxFields.split(",").map(f => f.trim()) : [];
-  const filters = this.textboxFilters ? this.textboxFilters.split(",").map(f => f.trim()) : [];
-  const filterLogic = this.filterLogic || "No specific logic applied";
-
-  let filterMessage = "Currently Applied Filters:\n";
-  
-  if (fields.length && filters.length && fields.length === filters.length) {
-    fields.forEach((field, index) => {
-      filterMessage += `- ${field}: ${filters[index]}\n`;
-    });
-    filterMessage += `Logic: ${filterLogic}`;
-  } else {
-    filterMessage += "No filters are currently applied.";
-  }
-
-  this.showToast("Applied Filters", filterMessage, "info");
-}
-
-
-
-
-async handleAsyncOperations() {
-  try {
-    // Check if userExists has not already been determined
-    if (this.userExists === false || this.userExists === undefined) {
-      this.userExists = await this.checkUserExists();
+  @wire(getRecord, { recordId: "$recordId", fields: ["Lead.Company"] })
+  wiredLead({ error, data }) {
+    if (data) {
+      this.recordName = getFieldValue(data, "Lead.Company") || "";
+      this.refreshView();
+    } else if (error) {
+      console.warn("Error fetching Lead data:", error);
     }
+  }
 
-    if (this.userExists) {
-      console.log("User exists");
-      this.isOAuthInitialized = true;
-      await this.initializeTemplates();
+  handleShowFilters() {
+    const fields = this.textboxFields
+      ? this.textboxFields.split(",").map((f) => f.trim())
+      : [];
+    const filters = this.textboxFilters
+      ? this.textboxFilters.split(",").map((f) => f.trim())
+      : [];
+    const filterLogic = this.filterLogic || "No specific logic applied";
+
+    let filterMessage = "Currently Applied Filters:\n";
+
+    if (fields.length && filters.length && fields.length === filters.length) {
+      fields.forEach((field, index) => {
+        filterMessage += `- ${field}: ${filters[index]}\n`;
+      });
+      filterMessage += `Logic: ${filterLogic}`;
     } else {
-      console.log("User doesn't exist");
+      filterMessage += "No filters are currently applied.";
     }
-  } catch (error) {
-    console.error("Error during user existence check:", error);
+
+    this.showToast("Applied Filters", filterMessage, "info");
   }
 
-  try {
-    // Check if accountExists has not already been determined
-    if (this.accountExists === false || this.accountExists === undefined) {
-      this.accountExists = await this.checkAccountExists();
+  async handleAsyncOperations() {
+    try {
+      // Check if userExists has not already been determined
+      if (this.userExists === false || this.userExists === undefined) {
+        this.userExists = await this.checkUserExists();
+      }
+
+      if (this.userExists) {
+        this.isOAuthInitialized = true;
+        await this.initializeTemplates();
+      }
+    } catch (error) {
+      console.error("Error during user existence check:", error);
     }
 
-    if (this.accountExists) {
-      console.log("Account exists");
+    try {
+      // Check if accountExists has not already been determined
+      if (this.accountExists === false || this.accountExists === undefined) {
+        this.accountExists = await this.checkAccountExists();
+      }
 
-      await this.fetchAccountData();
+      if (this.accountExists) {
+        await this.fetchAccountData();
 
-      try {
-        // Check if Data exists
-        if (this.dataExists === false || this.dataExists === undefined) {
-          this.dataExists = await this.checkDataExists();
-        }
-        if (this.dataExists) {
-          console.log("Data exists");
-          this.dataExists = true;
-          this.isMarqDataPresent = true;
-          this.triggerSendData();
-
-        } else {
-          
-          if (!this.isMarqDataPresent) {
-            console.warn(
-              "Marq data is not ready. The method execution will be skipped."
-            );
-            return;
-          } 
+        try {
+          // Check if Data exists
+          if (this.dataExists === false || this.dataExists === undefined) {
+            this.dataExists = await this.checkDataExists();
+          }
+          if (this.dataExists) {
+            this.dataExists = true;
+            this.isMarqDataPresent = true;
+            this.triggerSendData();
+          } else {
+            if (!this.isMarqDataPresent) {
+              console.warn(
+                "Marq data is not ready. The method execution will be skipped."
+              );
+              return;
+            }
 
             try {
+              // Prepare the schema dynamically based on customFields
+              const schema = [
+                { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
+                {
+                  name: "Name",
+                  fieldType: "STRING",
+                  isPrimary: false,
+                  order: 2
+                },
+                {
+                  name: "Logo",
+                  fieldType: "STRING",
+                  isPrimary: false,
+                  order: 3
+                },
+                {
+                  name: "Industry",
+                  fieldType: "STRING",
+                  isPrimary: false,
+                  order: 4
+                },
+                {
+                  name: "Marq User Restriction",
+                  fieldType: "STRING",
+                  isPrimary: false,
+                  order: 5
+                }
+              ];
 
-                 // Prepare the schema dynamically based on customFields
-      const schema = [
-        { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
-        { name: "Name", fieldType: "STRING", isPrimary: false, order: 2 },
-        { name: "Logo", fieldType: "STRING", isPrimary: false, order: 3 },
-        { name: "Industry", fieldType: "STRING", isPrimary: false, order: 4 },
-        {
-          name: "Marq User Restriction",
-          fieldType: "STRING",
-          isPrimary: false,
-          order: 5,
-        },
-      ];
+              if (this.customFields) {
+                const fieldsArray = this.customFields
+                  .split(",")
+                  .map((field) => field.trim());
+                fieldsArray.forEach((field) => {
+                  const fieldName = field.split(".").pop(); // Get the actual field name without the relationship prefix
+                  let fieldType = "STRING"; // Default field type
 
-      if (this.customFields) {
-        const fieldsArray = this.customFields
-          .split(",")
-          .map((field) => field.trim());
-        fieldsArray.forEach((field) => {
-          const fieldName = field.split(".").pop(); // Get the actual field name without the relationship prefix
-          let fieldType = "STRING"; // Default field type
+                  // Check if field name contains logo, img, or image (case-insensitive)
+                  const lowerCaseFieldName = fieldName.toLowerCase();
+                  if (
+                    lowerCaseFieldName.includes("logo") ||
+                    lowerCaseFieldName.includes("img") ||
+                    lowerCaseFieldName.includes("image")
+                  ) {
+                    fieldType = "STRING"; //set as "IMAGE" when we get that working
+                  }
 
-          // Check if field name contains logo, img, or image (case-insensitive)
-          const lowerCaseFieldName = fieldName.toLowerCase();
-          if (
-            lowerCaseFieldName.includes("logo") ||
-            lowerCaseFieldName.includes("img") ||
-            lowerCaseFieldName.includes("image")
-          ) {
-            fieldType = "STRING"; //set as "IMAGE" when we get that working
-          }
+                  schema.push({
+                    name: fieldName,
+                    fieldType: fieldType,
+                    isPrimary: false,
+                    order: schema.length + 1
+                  });
+                });
+              }
 
-          schema.push({
-            name: fieldName,
-            fieldType: fieldType,
-            isPrimary: false,
-            order: schema.length + 1,
-          });
-        });
-      }
-      
               //  console.log('Sending payload for create Dataset:', JSON.stringify(payload));
-    
+
               const datasetCreationResponse = await createDataset({
                 objectName: this.objectName,
-                schema: schema,
+                schema: schema
               });
-    
+
               const createdataset = JSON.parse(datasetCreationResponse);
-    
+
               // Assuming datasetCreationResult contains collectionId and dataSourceId
               if (
                 createdataset &&
@@ -462,56 +455,48 @@ async handleAsyncOperations() {
               // this.resetDataInitialization();
               return;
             }
-
-
+          }
+        } catch (error) {
+          console.error("Error during data existence check:", error);
         }
-      } catch (error) {
-        console.error("Error during data existence check:", error);
+      }
+    } catch (error) {
+      console.error("Error during account existence check:", error);
+    }
+
+    try {
+      // Check if sfdcOauthExists has not already been determined
+      if (
+        this.sfdcOauthExists === false ||
+        this.sfdcOauthExists === undefined
+      ) {
+        this.sfdcOauthExists = await this.checkSFDCOauthExists();
       }
 
-
-    } else {
-      console.log("Account doesn't exist");
+      if (this.sfdcOauthExists) {
+        //TODO: Add action here
+      }
+    } catch (error) {
+      console.error("Error during SFDC OAuth existence check:", error);
+    } finally {
+      // Set initializing to false when all checks are complete
+      this.isInitializing = false;
     }
-  } catch (error) {
-    console.error("Error during account existence check:", error);
   }
 
-  try {
-    // Check if sfdcOauthExists has not already been determined
-    if (this.sfdcOauthExists === false || this.sfdcOauthExists === undefined) {
-      this.sfdcOauthExists = await this.checkSFDCOauthExists();
+  @wire(getRecord, {
+    recordId: "$wiredAccountId",
+    fields: [ACCOUNT_NAME_FIELD, ACCOUNT_INDUSTRY_FIELD, ACCOUNT_LOGO_FIELD]
+  })
+  wiredAccount({ error, data }) {
+    if (data) {
+      this.accountname = getFieldValue(data, ACCOUNT_NAME_FIELD);
+      this.accountindustry = getFieldValue(data, ACCOUNT_INDUSTRY_FIELD);
+      this.accountlogo = getFieldValue(data, ACCOUNT_LOGO_FIELD);
+    } else if (error) {
+      console.warn("Error fetching account data:", error);
     }
-
-    if (this.sfdcOauthExists) {
-      console.log("sfdcOauthExists exists");
-    } else {
-      console.log("sfdcOauthExists doesn't exist");
-    }
-  } catch (error) {
-    console.error("Error during SFDC OAuth existence check:", error);
-  } finally {
-    // Set initializing to false when all checks are complete
-    this.isInitializing = false;
   }
-}
-
-
-@wire(getRecord, {
-  recordId: "$wiredAccountId",
-  fields: [ACCOUNT_NAME_FIELD, ACCOUNT_INDUSTRY_FIELD, ACCOUNT_LOGO_FIELD],
-})
-wiredAccount({ error, data }) {
-  if (data) {
-    this.accountname = getFieldValue(data, ACCOUNT_NAME_FIELD);
-    this.accountindustry = getFieldValue(data, ACCOUNT_INDUSTRY_FIELD);
-    this.accountlogo = getFieldValue(data, ACCOUNT_LOGO_FIELD);
-    console.log("Account Data Fetched:", this.accountname, this.accountindustry, this.accountlogo);
-  } else if (error) {
-    console.warn("Error fetching account data:", error);
-  }
-}
-
 
   async checkAccountExists() {
     try {
@@ -567,10 +552,6 @@ wiredAccount({ error, data }) {
         this.templatesFeed = result.usertableresult.templatesfeed; // Assign templatesfeed
         this.lastTemplatSyncDate = result.usertableresult.lasttemplatesyncdate;
 
-        // console.log("Marq User ID:", this.marqUserId);
-        // console.log("Templates Feed:", this.templatesFeed);
-        // console.log("Template last sync date:", this.lastTemplatSyncDate);
-
         return this.marqUserId != null; // Check if marquserid exists
       }
       return false;
@@ -590,7 +571,7 @@ wiredAccount({ error, data }) {
         this.marqdataresult = result.datatableresult;
         this.marqcollectionid = result.datatableresult.marqcollectionid;
         this.marqdatasetid = result.datatableresult.marqdatasetid;
-        return this.marqdataresult != null; 
+        return this.marqdataresult != null;
       }
       return false;
     } catch (error) {
@@ -601,18 +582,17 @@ wiredAccount({ error, data }) {
 
   async triggerSendData() {
     if (!this.objectName) {
-        return;
+      return;
     }
     try {
-        await this.sendData();
+      await this.sendData();
     } catch (error) {
-        console.error("Error sending data:", error);
+      console.error("Error sending data:", error);
     }
-}
-
+  }
 
   get templatesprocessed() {
-    return !this.templateisLoading && !this.isCheckingContent
+    return !this.templateisLoading && !this.isCheckingContent;
   }
 
   get noResultsFound() {
@@ -630,12 +610,9 @@ wiredAccount({ error, data }) {
     );
   }
 
-
   get showContent() {
     return this.isOAuthInitialized;
   }
-
-
 
   // Method to filter fields correctly
   get dynamicFields() {
@@ -691,27 +668,27 @@ wiredAccount({ error, data }) {
   @wire(getRecord, { recordId: "$recordId", fields: "$dynamicFields" })
   wiredRecord(result) {
     if (!this.recordId) return;
-    if(!this.isInitializing) {
-    this.wiredRecordResult = result;
-    if (result.data) {
-      this.recordData = result.data;
-      this.recordName =
-        getFieldValue(result.data, `${this.objectName}.Name`) || ""; // Use the dynamically qualified name
-      if (this.objectName === "Opportunity") {
-        this.stageName = getFieldValue(result.data, "Opportunity.StageName");
-        // console.log('StageName:', this.stageName); // Log the StageName for debugging
+    if (!this.isInitializing) {
+      this.wiredRecordResult = result;
+      if (result.data) {
+        this.recordData = result.data;
+        this.recordName =
+          getFieldValue(result.data, `${this.objectName}.Name`) || ""; // Use the dynamically qualified name
+        if (this.objectName === "Opportunity") {
+          this.stageName = getFieldValue(result.data, "Opportunity.StageName");
+          // console.log('StageName:', this.stageName); // Log the StageName for debugging
+        }
+        this.handleAsyncOperations();
+        this.refreshView(); // Refresh the view when the filter value changes
+      } else if (result.error) {
+        console.warn("Failed to fetch the record data: ", result.error);
       }
-      this.handleAsyncOperations();
-      this.refreshView(); // Refresh the view when the filter value changes
-    } else if (result.error) {
-      console.warn("Failed to fetch the record data: ", result.error);
     }
-  }
   }
 
   @wire(getRecord, {
     recordId: "$recordId",
-    fields: "$dynamicFieldsForCustomFields",
+    fields: "$dynamicFieldsForCustomFields"
   })
   async wiredCustomFieldsRecord(result) {
     if (!this.recordId || !this.customFields || !this.availableFields) return;
@@ -728,7 +705,6 @@ wiredAccount({ error, data }) {
       );
     }
   }
-
 
   initializeMarqData() {
     this.metadataType = "Data";
@@ -752,7 +728,7 @@ wiredAccount({ error, data }) {
   async initializeOAuth(metadataType = "user") {
     try {
       const authorizationUrl = await getAuthorizationUrl({
-        metadataType: metadataType,
+        metadataType: metadataType
       });
       if (authorizationUrl) {
         let oauthWindow;
@@ -785,8 +761,7 @@ wiredAccount({ error, data }) {
 
   async initializeSFDCOAuth() {
     try {
-      const sfdcauthorizationUrl = await getSFDCAuthorizationUrl({
-      });
+      const sfdcauthorizationUrl = await getSFDCAuthorizationUrl({});
       if (sfdcauthorizationUrl) {
         let sfdcoauthWindow;
         sfdcoauthWindow = window.open(
@@ -866,17 +841,16 @@ wiredAccount({ error, data }) {
 
   closePublicLinkModal() {
     this.isPublicLinkModalOpen = false;
-    this.currentPublicLink = '';
-    this.currentTemplateName = '';
-}
+    this.currentPublicLink = "";
+    this.currentTemplateName = "";
+  }
 
-copyPublicLinkFromModal() {
+  copyPublicLinkFromModal() {
     this.copyToClipboard(this.currentPublicLink);
     this.showToast("Success", "Public link copied to clipboard.", "success");
     this.isPublicLinkModalOpen = false;
-    this.currentPublicLink = '';
-}
-
+    this.currentPublicLink = "";
+  }
 
   handleWindowClose() {
     // Perform any cleanup or data refresh actions needed
@@ -896,131 +870,124 @@ copyPublicLinkFromModal() {
     refreshApex();
   }
 
-//   updateTextboxFilters() {
-//     try {
-//         // Filter templates that don't have related content
-//         const templatesToFilter = this.allTemplates.filter(
-//             (template) => !template.hasRelatedContent
-//         );
+  //   updateTextboxFilters() {
+  //     try {
+  //         // Filter templates that don't have related content
+  //         const templatesToFilter = this.allTemplates.filter(
+  //             (template) => !template.hasRelatedContent
+  //         );
 
-//         // Separate deleted templates
-//         const deletedTemplatesToFilter = templatesToFilter.filter((template) =>
-//             this.deletedTemplates.includes(template.id)
-//         );
+  //         // Separate deleted templates
+  //         const deletedTemplatesToFilter = templatesToFilter.filter((template) =>
+  //             this.deletedTemplates.includes(template.id)
+  //         );
 
-//         // Non-deleted templates
-//         const nonDeletedTemplatesToFilter = templatesToFilter.filter(
-//             (template) => !this.deletedTemplates.includes(template.id)
-//         );
+  //         // Non-deleted templates
+  //         const nonDeletedTemplatesToFilter = templatesToFilter.filter(
+  //             (template) => !this.deletedTemplates.includes(template.id)
+  //         );
 
-//         // Apply filters to the selected templates
-//         this.templates = this.applyFiltersToTemplates(nonDeletedTemplatesToFilter);
+  //         // Apply filters to the selected templates
+  //         this.templates = this.applyFiltersToTemplates(nonDeletedTemplatesToFilter);
 
-//         // Sort templates alphabetically by name
-//         this.templates = this.templates.sort((a, b) =>
-//             a.name.localeCompare(b.name)
-//         );
+  //         // Sort templates alphabetically by name
+  //         this.templates = this.templates.sort((a, b) =>
+  //             a.name.localeCompare(b.name)
+  //         );
 
-//         // Filter deleted templates if needed (optional)
-//         const filteredDeletedTemplates = this.applyFiltersToTemplates(deletedTemplatesToFilter);
+  //         // Filter deleted templates if needed (optional)
+  //         const filteredDeletedTemplates = this.applyFiltersToTemplates(deletedTemplatesToFilter);
 
-//         // Update displayed items
-//         this.updateDisplayedItems();
+  //         // Update displayed items
+  //         this.updateDisplayedItems();
 
-//         // Optionally, process or display deleted templates separately
-//         console.log("Filtered Deleted Templates: ", filteredDeletedTemplates);
-//     } catch (error) {
-//         console.error("updateTextboxFilters: Error occurred:", error);
-//     }
-// }
+  //         // Optionally, process or display deleted templates separately
+  //         console.log("Filtered Deleted Templates: ", filteredDeletedTemplates);
+  //     } catch (error) {
+  //         console.error("updateTextboxFilters: Error occurred:", error);
+  //     }
+  // }
 
-phrases = [
-  "Syncing Marq with Salesforce",
-  "Processing Salesforce details",
-  "Associating to your record",
-  "Applying template information",
-];
+  phrases = [
+    "Syncing Marq with Salesforce",
+    "Processing Salesforce details",
+    "Associating to your record",
+    "Applying template information"
+  ];
 
-cycleLoadingText() {
-  let index = 0;
+  cycleLoadingText() {
+    let index = 0;
 
-  // Start cycling through phrases
-  const interval = setInterval(() => {
+    // Start cycling through phrases
+    const interval = setInterval(() => {
       this.loadingText = this.phrases[index];
       index++;
 
       // Stop cycling after the last phrase
       if (index >= this.phrases.length) {
-          clearInterval(interval);
+        clearInterval(interval);
       }
-  }, 2000); // Change text every 2 seconds
-}
-
-
-
-
-
-
-updateTextboxFilters() {
-  try {
-    this.isFiltering = true; // Start filtering state
-
-    // Filter templates that don't have related content
-    const templatesToFilter = this.allTemplates.filter(
-      (template) => !template.hasRelatedContent
-    );
-
-    // Apply filters to the selected templates
-    this.templates = this.applyFiltersToTemplates(templatesToFilter);
-
-    // Sort templates alphabetically by name
-    this.templates = this.templates.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
-    // Update displayed items
-    this.updateDisplayedItems();
-  } catch (error) {
-    console.error("updateTextboxFilters: Error occurred:", error);
-  } finally {
-    setTimeout(() => {
-      this.isFiltering = false; // End filtering state
-      this.templateisLoading = false;
-    }, 500);
+    }, 2000); // Change text every 2 seconds
   }
-}
+
+  updateTextboxFilters() {
+    try {
+      this.isFiltering = true; // Start filtering state
+
+      // Filter templates that don't have related content
+      const templatesToFilter = this.allTemplates.filter(
+        (template) => !template.hasRelatedContent
+      );
+
+      // Apply filters to the selected templates
+      this.templates = this.applyFiltersToTemplates(templatesToFilter);
+
+      // Sort templates alphabetically by name
+      this.templates = this.templates.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+
+      // Update displayed items
+      this.updateDisplayedItems();
+    } catch (error) {
+      console.error("updateTextboxFilters: Error occurred:", error);
+    } finally {
+      setTimeout(() => {
+        this.isFiltering = false; // End filtering state
+        this.templateisLoading = false;
+      }, 500);
+    }
+  }
 
   // Getter to dynamically compute active filters
   get activeFilters() {
-    const fields = this.textboxFields ? this.textboxFields.split(',') : [];
-    const filters = this.textboxFilters ? this.textboxFilters.split(',') : [];
+    const fields = this.textboxFields ? this.textboxFields.split(",") : [];
+    const filters = this.textboxFilters ? this.textboxFilters.split(",") : [];
 
     return fields.map((field, index) => ({ field, value: filters[index] }));
   }
 
   handleRemoveFilter(event) {
     const index = parseInt(event.target.dataset.index, 10);
-  
+
     // Split the current fields and filters into arrays
-    const fields = this.textboxFields ? this.textboxFields.split(',') : [];
-    const filters = this.textboxFilters ? this.textboxFilters.split(',') : [];
-  
+    const fields = this.textboxFields ? this.textboxFields.split(",") : [];
+    const filters = this.textboxFilters ? this.textboxFilters.split(",") : [];
+
     // Save the removed filter
     this.deletedFilters.push({ field: fields[index], value: filters[index] });
-  
+
     // Remove the filter at the specified index
     fields.splice(index, 1);
     filters.splice(index, 1);
-  
+
     // Update the textboxFields and textboxFilters strings
-    this.textboxFields = fields.join(',');
-    this.textboxFilters = filters.join(',');
-  
+    this.textboxFields = fields.join(",");
+    this.textboxFilters = filters.join(",");
+
     // Call the function to update the displayed templates
     this.updateTextboxFilters();
   }
-  
-
 
   applyFiltersToTemplates(templates) {
     const fieldsArray = this.textboxFields
@@ -1182,59 +1149,61 @@ updateTextboxFilters() {
   updateDisplayedItems() {
     // Get all projects (related content) from allTemplates
     let filteredProjects = this.allTemplates.filter(
-        (item) => item.hasRelatedContent && !this.deletedTemplates.includes(item.id)
+      (item) =>
+        item.hasRelatedContent && !this.deletedTemplates.includes(item.id)
     );
 
     // Apply search term to projects
     if (this.searchTerm) {
-        const lowerSearchTerm = this.searchTerm.toLowerCase();
-        filteredProjects = filteredProjects.filter((project) => {
-            return this.matchesSearchTerm(project, lowerSearchTerm);
-        });
+      const lowerSearchTerm = this.searchTerm.toLowerCase();
+      filteredProjects = filteredProjects.filter((project) => {
+        return this.matchesSearchTerm(project, lowerSearchTerm);
+      });
     }
 
     // Remove duplicates from filteredProjects
     filteredProjects = filteredProjects.filter(
-        (t, index, self) => index === self.findIndex((tt) => tt.id === t.id)
+      (t, index, self) => index === self.findIndex((tt) => tt.id === t.id)
     );
 
     // Sort projects by lastModifiedTimestamp descending
     filteredProjects.sort(
-        (a, b) => b.lastModifiedTimestamp - a.lastModifiedTimestamp
+      (a, b) => b.lastModifiedTimestamp - a.lastModifiedTimestamp
     );
 
     // Apply search term to templates
     let filteredTemplates;
     if (this.searchTerm) {
-        // Use allTemplates when searching, excluding projects and deleted templates
-        filteredTemplates = this.allTemplates.filter(
-            (template) => !template.hasRelatedContent && !this.deletedTemplates.includes(template.id)
-        );
+      // Use allTemplates when searching, excluding projects and deleted templates
+      filteredTemplates = this.allTemplates.filter(
+        (template) =>
+          !template.hasRelatedContent &&
+          !this.deletedTemplates.includes(template.id)
+      );
     } else {
-        // Use the templates filtered by textbox filters
-        filteredTemplates = [...this.templates];
+      // Use the templates filtered by textbox filters
+      filteredTemplates = [...this.templates];
     }
 
     if (this.searchTerm) {
-        const lowerSearchTerm = this.searchTerm.toLowerCase();
-        filteredTemplates = filteredTemplates.filter((template) => {
-            return this.matchesSearchTerm(template, lowerSearchTerm);
-        });
+      const lowerSearchTerm = this.searchTerm.toLowerCase();
+      filteredTemplates = filteredTemplates.filter((template) => {
+        return this.matchesSearchTerm(template, lowerSearchTerm);
+      });
     }
 
     // Remove duplicates from filteredTemplates
     filteredTemplates = filteredTemplates.filter(
-        (t, index, self) => index === self.findIndex((tt) => tt.id === t.id)
+      (t, index, self) => index === self.findIndex((tt) => tt.id === t.id)
     );
 
     // Update displayedProjects and displayedTemplates
     this.displayedProjects = filteredProjects;
     this.displayedTemplates = filteredTemplates.slice(
-        0,
-        this.currentOffset || 10
+      0,
+      this.currentOffset || 10
     );
-}
-
+  }
 
   matchesSearchTerm(item, lowerSearchTerm) {
     const name = item.name || "";
@@ -1286,8 +1255,6 @@ updateTextboxFilters() {
     loadBatch();
   }
 
-  
-
   async checkRelatedContentBatch(batch) {
     this.isCheckingContent = true;
     try {
@@ -1319,7 +1286,7 @@ updateTextboxFilters() {
                   hour: "numeric",
                   minute: "numeric",
                   hour12: true,
-                  timeZoneName: "short",
+                  timeZoneName: "short"
                 };
                 return date.toLocaleString(undefined, options);
               })()
@@ -1345,7 +1312,9 @@ updateTextboxFilters() {
 
             // Set button labels based on project presence
             template.buttonLabel = template.projectId ? "Edit" : "Create New";
-            template.linkLabel = template.publicLink  ? "Create public link" : "Create public link";
+            template.linkLabel = template.publicLink
+              ? "Create public link"
+              : "Create public link";
             template.viewButtonLabel = template.projectId ? "View" : null;
             template.isEdit = !!template.projectId;
 
@@ -1365,7 +1334,7 @@ updateTextboxFilters() {
                     hour: "numeric",
                     minute: "numeric",
                     hour12: true,
-                    timeZoneName: "short",
+                    timeZoneName: "short"
                   };
                   return date.toLocaleString(undefined, options);
                 })()
@@ -1390,7 +1359,7 @@ updateTextboxFilters() {
         if (indexInAllTemplates !== -1) {
           this.allTemplates[indexInAllTemplates] = {
             ...this.allTemplates[indexInAllTemplates],
-            ...template,
+            ...template
           };
         }
       }
@@ -1410,14 +1379,17 @@ updateTextboxFilters() {
   handleLogout() {
     try {
       // Open the logout URL in a new window
-      const logoutWindow = window.open("https://app.marq.com/users/logout", "_blank");
-  
+      const logoutWindow = window.open(
+        "https://app.marq.com/users/logout",
+        "_blank"
+      );
+
       // Automatically close the window after a short delay (e.g., 2 seconds)
       setTimeout(() => {
         if (logoutWindow) {
           logoutWindow.close();
         }
-      
+
         // Reset all relevant properties to their initial state
         this.marqUserId = null;
         this.templatesFeed = null;
@@ -1428,7 +1400,7 @@ updateTextboxFilters() {
 
         // Clear projects-related data
         this.displayedProjects = [];
-      
+
         // Clear all template-related data
         this.templates = [];
         this.filteredTemplates = []; // Ensure this is explicitly reset
@@ -1436,50 +1408,53 @@ updateTextboxFilters() {
         this.allTemplates = [];
         this.deletedTemplates = [];
         this.recentChanges = {};
-      
+
         // Update the UI
         this.updateDisplayedItems();
-      
+
         // Delete user record
         this.deleteMarqUserRecord();
-      
+
         this.showToast("Success", "Logged out successfully", "success");
       }, 500);
-      
     } catch (error) {
       console.error("Error during logout:", error);
-      this.showToast("Error", "An error occurred during logout. Check console for details.", "error");
+      this.showToast(
+        "Error",
+        "An error occurred during logout. Check console for details.",
+        "error"
+      );
     }
   }
-  
-  
 
   async handleForceSyncTemplates() {
     try {
       this.isSyncing = true;
       this.forceSync = true;
-  
+
       await this.initializeTemplates();
-  
+
       // Restore deleted filters if any
       if (this.deletedFilters.length > 0) {
-        const fields = this.textboxFields ? this.textboxFields.split(',') : [];
-        const filters = this.textboxFilters ? this.textboxFilters.split(',') : [];
-  
+        const fields = this.textboxFields ? this.textboxFields.split(",") : [];
+        const filters = this.textboxFilters
+          ? this.textboxFilters.split(",")
+          : [];
+
         this.deletedFilters.forEach(({ field, value }) => {
           if (!fields.includes(field)) {
             fields.push(field);
             filters.push(value);
           }
         });
-  
+
         // Update the filters
-        this.textboxFields = fields.join(',');
-        this.textboxFilters = filters.join(',');
-  
+        this.textboxFields = fields.join(",");
+        this.textboxFilters = filters.join(",");
+
         // Clear the deleted filters history after restoring
         this.deletedFilters = [];
-  
+
         this.updateTextboxFilters();
       }
     } catch (error) {
@@ -1488,31 +1463,28 @@ updateTextboxFilters() {
       this.isSyncing = false;
     }
   }
-  
 
-get syncIconClass() {
-  return this.isSyncing ? 'syncing' : '';
-}
-  
+  get syncIconClass() {
+    return this.isSyncing ? "syncing" : "";
+  }
 
   async fetchTemplates() {
     if (!this.isOAuthInitialized) {
       console.error("OAuth is not initialized");
       return;
     }
-  
+
     try {
       // Use the `forceSync` flag to bypass the last sync date check
-      const needsSync = this.forceSync || this.shouldSyncTemplates(
-        this.lastTemplatSyncDate,
-        this.templatesFeed
-      );
-  
+      const needsSync =
+        this.forceSync ||
+        this.shouldSyncTemplates(this.lastTemplatSyncDate, this.templatesFeed);
+
       if (needsSync) {
         await this.syncTemplates();
         this.forceSync = false; // Reset the flag after forcing sync
       }
-  
+
       if (this.templatesFeed) {
         await this.loadTemplatesFromFeed(this.templatesFeed);
       } else {
@@ -1529,7 +1501,6 @@ get syncIconClass() {
       this.updateTextboxFilters();
     }
   }
-  
 
   // Check if templates need to be synced based on the last sync date
   shouldSyncTemplates(lastSyncDateString, templatesFeed) {
@@ -1551,7 +1522,7 @@ get syncIconClass() {
   // Simulates syncing templates (could involve API call)
   async syncTemplates() {
     try {
-    //   console.log("Syncing templates...");
+      //   console.log("Syncing templates...");
 
       // Call the Apex method and parse the result
       const syncResult = await fetchAndStoreTemplates();
@@ -1589,7 +1560,7 @@ get syncIconClass() {
   async loadTemplatesFromFeed(templatesFeed) {
     try {
       const response = await fetchTemplatesfromMarq({
-        templatesUrl: templatesFeed,
+        templatesUrl: templatesFeed
       });
       const templatesData = JSON.parse(response);
 
@@ -1621,7 +1592,7 @@ get syncIconClass() {
             contentVersionId: existingTemplate
               ? existingTemplate.contentVersionId
               : null,
-            publicLink: existingTemplate ? existingTemplate.publicLink : null,
+            publicLink: existingTemplate ? existingTemplate.publicLink : null
           };
         });
         this.allTemplates = newTemplates;
@@ -1647,7 +1618,6 @@ get syncIconClass() {
     }
   }
 
-
   // Handle image click
   handleImageClick(event) {
     const templateId = event.currentTarget.dataset.id;
@@ -1660,7 +1630,7 @@ get syncIconClass() {
       id: templateId,
       name: templateName,
       projectId: projectId,
-      hasRelatedContent: hasRelatedContent,
+      hasRelatedContent: hasRelatedContent
     });
   }
 
@@ -1676,7 +1646,7 @@ get syncIconClass() {
       id: templateId,
       name: templateName,
       projectId: projectId,
-      hasRelatedContent: hasRelatedContent,
+      hasRelatedContent: hasRelatedContent
     });
   }
 
@@ -1684,265 +1654,297 @@ get syncIconClass() {
     const selectedAction = event.detail.value;
     const menuElement = event.currentTarget;
 
-    const { id: templateId, projectId, contentVersionId, publicLink, name: templateName, hasRelatedContent } = menuElement.dataset;
+    const {
+      id: templateId,
+      projectId,
+      contentVersionId,
+      publicLink,
+      name: templateName,
+      hasRelatedContent
+    } = menuElement.dataset;
     const hasRelated = hasRelatedContent === "true";
 
     switch (selectedAction) {
-        case "edit":
-            this.openModalById({ id: templateId, name: templateName, projectId, hasRelatedContent: hasRelated });
-            break;
-        
-        case "present":
-          const presentUrl = `https://app.marq.com/documents/view/${templateId}`; 
-          window.open(presentUrl, '_blank');
-          break;
+      case "edit":
+        this.openModalById({
+          id: templateId,
+          name: templateName,
+          projectId,
+          hasRelatedContent: hasRelated
+        });
+        break;
 
-        case "view":
-            this.viewContentVersionById(contentVersionId);
-            break;
+      case "present":
+        const presentUrl = `https://app.marq.com/documents/view/${templateId}`;
+        window.open(presentUrl, "_blank");
+        break;
 
-        case "createPublicLink":
-            this.publishFileById(contentVersionId, templateName, templateId);
-            break;
+      case "view":
+        this.viewContentVersionById(contentVersionId);
+        break;
 
-        case "copyPublicLink":
-            this.handleCopyPublicLink(publicLink, templateName);
-            break;
+      case "createPublicLink":
+        this.publishFileById(contentVersionId, templateName, templateId);
+        break;
 
-        case "delete":
-            this.deleteFileById(projectId, contentVersionId, templateId);
-            break;
+      case "copyPublicLink":
+        this.handleCopyPublicLink(publicLink, templateName);
+        break;
 
-        default:
-            console.warn("Unknown action:", selectedAction);
+      case "delete":
+        this.deleteFileById(projectId, contentVersionId, templateId);
+        break;
+
+      default:
+        console.warn("Unknown action:", selectedAction);
     }
-}
+  }
 
-addPublicLinkToRecentChanges(templateId, recordId, updates) {
-  const templateKey = `${templateId}-${recordId}`;
+  addPublicLinkToRecentChanges(templateId, recordId, updates) {
+    const templateKey = `${templateId}-${recordId}`;
 
-  if (!this.recentChanges[templateKey]) {
+    if (!this.recentChanges[templateKey]) {
       this.recentChanges[templateKey] = {};
-  }
+    }
 
-  // Update the public link
-  if (updates.publicLink) {
+    // Update the public link
+    if (updates.publicLink) {
       this.recentChanges[templateKey].publicLink = updates.publicLink;
-  }
+    }
 
-  // Update the last modified date (current date and time)
-  this.recentChanges[templateKey].lastModifiedDate = new Date().toISOString();
+    // Update the last modified date (current date and time)
+    this.recentChanges[templateKey].lastModifiedDate = new Date().toISOString();
 
-  // Update the template in allTemplates
-  const templateIndex = this.allTemplates.findIndex(t => t.id === templateId);
-  if (templateIndex !== -1) {
+    // Update the template in allTemplates
+    const templateIndex = this.allTemplates.findIndex(
+      (t) => t.id === templateId
+    );
+    if (templateIndex !== -1) {
       this.allTemplates[templateIndex].publicLink = updates.publicLink;
       // Trigger reactivity
       this.allTemplates = [...this.allTemplates];
-  }
+    }
 
-  // Update the template in displayedProjects
-  const projectIndex = this.displayedProjects.findIndex(t => t.id === templateId);
-  if (projectIndex !== -1) {
+    // Update the template in displayedProjects
+    const projectIndex = this.displayedProjects.findIndex(
+      (t) => t.id === templateId
+    );
+    if (projectIndex !== -1) {
       this.displayedProjects[projectIndex].publicLink = updates.publicLink;
       // Trigger reactivity
       this.displayedProjects = [...this.displayedProjects];
+    }
+
+    this.updateDisplayedItems();
   }
 
-  this.updateDisplayedItems();
-}
-
-
-handleCopy(event) {
-  // Prevent the default copy action
-  event.preventDefault();
-  this.showToast("Error", `Please use the copy to clipboard button`);
-}
-handleContextMenu(event) {
-  event.preventDefault();
-  this.showToast("Error", `Please use the copy to clipboard button`);
-}
-
-handleViewPublicLink(event) {
-  const publicLink = event.target.dataset.publicLink;
-  if (publicLink) {
-      window.open(publicLink, '_blank'); // Opens the link in a new tab
-  } else {
-      this.showToast('Error', 'No public link available.', 'error');
+  handleCopy(event) {
+    // Prevent the default copy action
+    event.preventDefault();
+    this.showToast("Error", `Please use the copy to clipboard button`);
   }
-}
+  handleContextMenu(event) {
+    event.preventDefault();
+    this.showToast("Error", `Please use the copy to clipboard button`);
+  }
 
+  handleViewPublicLink(event) {
+    const publicLink = event.target.dataset.publicLink;
+    if (publicLink) {
+      window.open(publicLink, "_blank"); // Opens the link in a new tab
+    } else {
+      this.showToast("Error", "No public link available.", "error");
+    }
+  }
 
-async publishFileById(contentVersionId, templateName, templateId) {
+  async publishFileById(contentVersionId, templateName, templateId) {
     try {
-        // Check if contentVersionId exists for the related content
-        if (!contentVersionId) {
-            console.warn("No ContentVersionId provided. Attempting to fetch related content version...");
+      // Check if contentVersionId exists for the related content
+      if (!contentVersionId) {
+        console.warn(
+          "No ContentVersionId provided. Attempting to fetch related content version..."
+        );
 
-            const relatedContent = await findRelatedContentVersionByTemplateKey({
-                templateKey: `${templateId}-${this.recordId}`,
-            });
-
-            if (relatedContent && relatedContent.contentVersionId) {
-                contentVersionId = relatedContent.contentVersionId; // Use the fetched contentVersionId
-            } else {
-                throw new Error("Related content version not found for the template.");
-            }
-        }
-
-        // Check if a public link already exists
-        if (this.publishedLinks[templateId]) {
-            this.handleCopyPublicLink(this.publishedLinks[templateId], templateName);
-            return;
-        }
-
-        // Proceed to create the public link
-        const response = await createContentDelivery({
-            contentVersionId,
-            projectName: templateName,
+        const relatedContent = await findRelatedContentVersionByTemplateKey({
+          templateKey: `${templateId}-${this.recordId}`
         });
 
-        const parsedResponse = JSON.parse(response);
-
-        if (parsedResponse.success === "true" && parsedResponse.contentPublicUrl) {
-          const publicUrl = parsedResponse.contentPublicUrl;
-
-          // Cache the link for future use
-          this.publishedLinks[templateId] = publicUrl;
-          this.currentPublicLink = publicUrl; // Set the link for the modal
-          this.currentTemplateName = templateName; 
-          this.isPublicLinkModalOpen = true; // Open the modal
-
-          // Update the recentChanges using the helper function
-          this.addPublicLinkToRecentChanges(templateId, this.recordId, {
-              publicLink: publicUrl
-          });
-      } else {
-          throw new Error(parsedResponse.error || "Failed to create public link.");
+        if (relatedContent && relatedContent.contentVersionId) {
+          contentVersionId = relatedContent.contentVersionId; // Use the fetched contentVersionId
+        } else {
+          throw new Error(
+            "Related content version not found for the template."
+          );
+        }
       }
-  } catch (error) {
+
+      // Check if a public link already exists
+      if (this.publishedLinks[templateId]) {
+        this.handleCopyPublicLink(
+          this.publishedLinks[templateId],
+          templateName
+        );
+        return;
+      }
+
+      // Proceed to create the public link
+      const response = await createContentDelivery({
+        contentVersionId,
+        projectName: templateName
+      });
+
+      const parsedResponse = JSON.parse(response);
+
+      if (
+        parsedResponse.success === "true" &&
+        parsedResponse.contentPublicUrl
+      ) {
+        const publicUrl = parsedResponse.contentPublicUrl;
+
+        // Cache the link for future use
+        this.publishedLinks[templateId] = publicUrl;
+        this.currentPublicLink = publicUrl; // Set the link for the modal
+        this.currentTemplateName = templateName;
+        this.isPublicLinkModalOpen = true; // Open the modal
+
+        // Update the recentChanges using the helper function
+        this.addPublicLinkToRecentChanges(templateId, this.recordId, {
+          publicLink: publicUrl
+        });
+      } else {
+        throw new Error(
+          parsedResponse.error || "Failed to create public link."
+        );
+      }
+    } catch (error) {
       console.error("Error during public link creation:", error);
-      this.showToast("Error", `Failed to create public link: ${error.message}`, "error");
+      this.showToast(
+        "Error",
+        `Failed to create public link: ${error.message}`,
+        "error"
+      );
+    }
   }
-}
 
-handleModalCopyPublicLink(event) {
-  event.preventDefault();
-  
-  const publicLink = event.target.dataset.publicLink;
-  const templateName = event.target.dataset.templateName;
+  handleModalCopyPublicLink(event) {
+    event.preventDefault();
 
-  if (publicLink) {
+    const publicLink = event.target.dataset.publicLink;
+    const templateName = event.target.dataset.templateName;
+
+    if (publicLink) {
       const emailCompatibleLink = `<a href="${publicLink}" target="_blank">${templateName}</a>`;
       this.copyToClipboard(emailCompatibleLink, true);
       this.showToast("Success", "Public link copied to clipboard.", "success");
       this.closePublicLinkModal();
-  } else {
+    } else {
       this.showToast("Error", "No public link available.", "error");
+    }
   }
-}
 
-
-handleCopyPublicLink(publicLink, templateName) {
+  handleCopyPublicLink(publicLink, templateName) {
     if (publicLink) {
-        const emailCompatibleLink = `<a href="${publicLink}" target="_blank">${templateName}</a>`;
-        this.copyToClipboard(emailCompatibleLink, true);
-        this.showToast("Success", "Public link copied to clipboard.", "success");
-        this.closePublicLinkModal();
+      const emailCompatibleLink = `<a href="${publicLink}" target="_blank">${templateName}</a>`;
+      this.copyToClipboard(emailCompatibleLink, true);
+      this.showToast("Success", "Public link copied to clipboard.", "success");
+      this.closePublicLinkModal();
     } else {
-        this.showToast("Error", "No public link available.", "error");
+      this.showToast("Error", "No public link available.", "error");
     }
-}
+  }
 
-copyToClipboard(text, isHtml = false) {
+  copyToClipboard(text, isHtml = false) {
     if (navigator.clipboard && window.isSecureContext) {
-        const type = isHtml ? "text/html" : "text/plain";
-        const blob = new Blob([text], { type });
-        const data = [new ClipboardItem({ [type]: blob })];
-        navigator.clipboard.write(data).catch((err) => console.error("Failed to write to clipboard", err));
+      const type = isHtml ? "text/html" : "text/plain";
+      const blob = new Blob([text], { type });
+      const data = [new ClipboardItem({ [type]: blob })];
+      navigator.clipboard
+        .write(data)
+        .catch((err) => console.error("Failed to write to clipboard", err));
     } else {
-        // Fallback for older browsers
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed"; // Prevent scrolling
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        try {
-            document.execCommand("copy");
-        } catch (err) {
-            console.error("Fallback copy failed", err);
-        }
-        document.body.removeChild(textarea);
+      // Fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed"; // Prevent scrolling
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        console.error("Fallback copy failed", err);
+      }
+      document.body.removeChild(textarea);
     }
-}
+  }
 
-updateLabelText(templateId, newLabel) {
+  updateLabelText(templateId, newLabel) {
     // Update in displayedTemplates
-    const template = this.displayedTemplates.find(template => template.id === templateId);
+    const template = this.displayedTemplates.find(
+      (template) => template.id === templateId
+    );
     if (template) {
-        template.linkLabel = newLabel;
+      template.linkLabel = newLabel;
     }
 
     // Update in allTemplates
-    const allTemplate = this.allTemplates.find(template => template.id === templateId);
+    const allTemplate = this.allTemplates.find(
+      (template) => template.id === templateId
+    );
     if (allTemplate) {
-        allTemplate.linkLabel = newLabel;
+      allTemplate.linkLabel = newLabel;
     }
 
     // Update in recentChanges if it exists
     const recentChangeKey = `${templateId}-${this.recordId}`;
     if (this.recentChanges[recentChangeKey]) {
-        this.recentChanges[recentChangeKey].linkLabel = newLabel;
+      this.recentChanges[recentChangeKey].linkLabel = newLabel;
     }
-}
+  }
 
-
-
-updateDisplayedTemplatesAfterDeletion() {
+  updateDisplayedTemplatesAfterDeletion() {
     const filteredTemplates = this.allTemplates.filter((template) => {
-        // Include templates if:
-        // 1. They have related content (projects)
-        // 2. They are not in the deletedTemplates array
-        // 3. They match any filter or search logic (filteredTemplates)
+      // Include templates if:
+      // 1. They have related content (projects)
+      // 2. They are not in the deletedTemplates array
+      // 3. They match any filter or search logic (filteredTemplates)
 
-        return (
-            template.hasRelatedContent || // Include related content explicitly
-            !this.deletedTemplates.includes(template.id) || // Exclude deleted templates
-            this.filteredTemplates.some(
-                (filteredTemplate) => filteredTemplate.id === template.id
-            )
-        );
+      return (
+        template.hasRelatedContent || // Include related content explicitly
+        !this.deletedTemplates.includes(template.id) || // Exclude deleted templates
+        this.filteredTemplates.some(
+          (filteredTemplate) => filteredTemplate.id === template.id
+        )
+      );
     });
 
     const newDisplayedTemplates = filteredTemplates.filter(
-        (template) => !template.hasRelatedContent
+      (template) => !template.hasRelatedContent
     );
-    
+
     // Merge newDisplayedTemplates with existing displayedTemplates
     this.displayedTemplates = [
-        ...this.displayedTemplates.filter(
-            (template) => !newDisplayedTemplates.some((t) => t.id === template.id)
-        ),
-        ...newDisplayedTemplates,
-    ].slice(0, this.currentOffset || 10);    
-}
-
-async handleAccountAction() {
-  await this.handleAccountAuthorizeClick();
-}
-
-async handleAdminAction() {
-  if (!this.sfdcOauthExists) {
-    await this.handleSFDCAuthorizeClick();
+      ...this.displayedTemplates.filter(
+        (template) => !newDisplayedTemplates.some((t) => t.id === template.id)
+      ),
+      ...newDisplayedTemplates
+    ].slice(0, this.currentOffset || 10);
   }
-  if (!this.accountExists) {
-    this.metadataType = "data";
+
+  async handleAccountAction() {
     await this.handleAccountAuthorizeClick();
   }
-  this.isSettingsModalOpen = true; // Open the modal after authorization
-}
 
+  async handleAdminAction() {
+    if (!this.sfdcOauthExists) {
+      await this.handleSFDCAuthorizeClick();
+    }
+    if (!this.accountExists) {
+      this.metadataType = "data";
+      await this.handleAccountAuthorizeClick();
+    }
+    this.isSettingsModalOpen = true; // Open the modal after authorization
+  }
 
   async openModalById({ id, name, projectId, hasRelatedContent }) {
     try {
@@ -1973,7 +1975,7 @@ async handleAdminAction() {
     try {
       if (contentVersionId) {
         const contentDocumentId = await findContentDocumentId({
-          contentVersionId,
+          contentVersionId
         });
         if (contentDocumentId) {
           // Navigate to the Content Document record page
@@ -1981,8 +1983,8 @@ async handleAdminAction() {
             type: "standard__recordPage",
             attributes: {
               recordId: contentDocumentId,
-              actionName: "view",
-            },
+              actionName: "view"
+            }
           });
         } else {
           console.error("Content document ID not found");
@@ -1997,16 +1999,16 @@ async handleAdminAction() {
 
   async deleteFileById(projectId, contentVersionId, templateId) {
     try {
-    //   console.log("deleteFileById called with:", {
-    //     projectId,
-    //     contentVersionId,
-    //     templateId,
-    //   });
+      //   console.log("deleteFileById called with:", {
+      //     projectId,
+      //     contentVersionId,
+      //     templateId,
+      //   });
 
       // Call the Apex method to delete the project or content version
       await deleteProjectOrContent({
         projectId: projectId,
-        contentVersionId: contentVersionId,
+        contentVersionId: contentVersionId
       });
       this.showToast("Success", "File deleted successfully", "success");
 
@@ -2016,40 +2018,41 @@ async handleAdminAction() {
       );
       if (templateIndex > -1) {
         this.allTemplates[templateIndex] = {
-            ...this.allTemplates[templateIndex],
-            hasRelatedContent: false,
-            projectId: null,
-            contentVersionId: null,
-            buttonLabel: "Create New",
-            viewButtonLabel: null,
-            isEdit: false,
-            image: `https://thumbs.app.marq.com/documents/thumb/${templateId}/0/2048/NULL/200/true?clipToPage=true&useLargePdfPageFallback=false`,
-            lastModifiedDate: null,
-            lastModifiedTimestamp: 0,
+          ...this.allTemplates[templateIndex],
+          hasRelatedContent: false,
+          projectId: null,
+          contentVersionId: null,
+          buttonLabel: "Create New",
+          viewButtonLabel: null,
+          isEdit: false,
+          image: `https://thumbs.app.marq.com/documents/thumb/${templateId}/0/2048/NULL/200/true?clipToPage=true&useLargePdfPageFallback=false`,
+          lastModifiedDate: null,
+          lastModifiedTimestamp: 0
         };
-        
+
         // Remove from displayedProjects
         this.displayedProjects = this.displayedProjects.filter(
-            (project) => project.id !== templateId
+          (project) => project.id !== templateId
         );
-        
+
         if (
-            this.matchesSearchTerm(this.allTemplates[templateIndex], this.searchTerm) &&
-            !this.displayedTemplates.find((t) => t.id === templateId)
+          this.matchesSearchTerm(
+            this.allTemplates[templateIndex],
+            this.searchTerm
+          ) &&
+          !this.displayedTemplates.find((t) => t.id === templateId)
         ) {
-            this.displayedTemplates = [
-                ...this.displayedTemplates,
-                this.allTemplates[templateIndex],
-            ];
+          this.displayedTemplates = [
+            ...this.displayedTemplates,
+            this.allTemplates[templateIndex]
+          ];
         }
-        
-        
-          
-          // Add the deleted template ID to `deletedTemplates`
-          if (!this.deletedTemplates.includes(templateId)) {
-            this.deletedTemplates.push(templateId);
-          }
-          
+
+        // Add the deleted template ID to `deletedTemplates`
+        if (!this.deletedTemplates.includes(templateId)) {
+          this.deletedTemplates.push(templateId);
+        }
+
         this.allTemplates = [...this.allTemplates]; // Trigger reactivity
       }
 
@@ -2083,13 +2086,12 @@ async handleAdminAction() {
           : true;
 
         if (matchesSearch) {
-            if (!this.displayedTemplates.find((t) => t.id === templateId)) {
-                this.displayedTemplates = [
-                    ...this.displayedTemplates,
-                    this.allTemplates[templateIndex],
-                ];
-            }
-            
+          if (!this.displayedTemplates.find((t) => t.id === templateId)) {
+            this.displayedTemplates = [
+              ...this.displayedTemplates,
+              this.allTemplates[templateIndex]
+            ];
+          }
         }
       }
     } catch (error) {
@@ -2108,7 +2110,6 @@ async handleAdminAction() {
     }
   }
 
-
   async processCustomFields() {
     if (!this.customFields) {
       console.error("customFields are not set");
@@ -2124,7 +2125,7 @@ async handleAdminAction() {
       const fieldValue = getFieldValue(this.recordDataForCustomFields, field);
       if (fieldValue !== undefined) {
         fieldValues[field] = fieldValue;
-      } 
+      }
     });
 
     // console.log('Processed custom field values:', JSON.stringify(fieldValues));
@@ -2132,8 +2133,6 @@ async handleAdminAction() {
     // Store the custom field values for use in sendData
     this.customFieldValues = fieldValues;
   }
-
-
 
   async sendData() {
     if (!this.isMarqDataPresent) {
@@ -2150,7 +2149,7 @@ async handleAdminAction() {
         "Marq User Restriction": this.userEmail,
         Name: this.accountname,
         Logo: this.accountlogo,
-        Industry: this.accountindustry,
+        Industry: this.accountindustry
       };
 
       const imageFields = ["Logo"];
@@ -2183,67 +2182,86 @@ async handleAdminAction() {
             ) {
               imageFields.push(fieldName);
             }
-          } 
+          }
         }
       }
 
       // Assign the identified image fields to ImageFields
       recordProperties["ImageFields"] = imageFields.join(",");
 
-            // Prepare the schema dynamically based on customFields
-            const schema = [
-              { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
-              { name: "Name", fieldType: "STRING", isPrimary: false, order: 2 },
-              { name: "Logo", fieldType: "STRING", isPrimary: false, order: 3 },
-              { name: "Industry", fieldType: "STRING", isPrimary: false, order: 4 },
-              {
-                name: "Marq User Restriction",
-                fieldType: "STRING",
-                isPrimary: false,
-                order: 5,
-              },
-            ];
+      // Prepare the schema dynamically based on customFields
+      const schema = [
+        { name: "Id", fieldType: "STRING", isPrimary: true, order: 1 },
+        { name: "Name", fieldType: "STRING", isPrimary: false, order: 2 },
+        { name: "Logo", fieldType: "STRING", isPrimary: false, order: 3 },
+        { name: "Industry", fieldType: "STRING", isPrimary: false, order: 4 },
+        {
+          name: "Marq User Restriction",
+          fieldType: "STRING",
+          isPrimary: false,
+          order: 5
+        }
+      ];
 
-     
-            if (this.objectName === "Opportunity") {
-              await this.fetchOpportunityProducts();
-            
-              // Add products dynamically to recordProperties with placeholders
-              for (let i = 0; i < 10; i++) {
-                if (this.products[i]) {
-                  const product = this.products[i];
-            
-                  // Create a currency formatter for the product's currency
-                  const currencyFormatter = new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: product.currencyIsoCode,
-                    minimumFractionDigits: 2
-                  });
-            
-                  recordProperties[`Product_${i + 1}_Name`] = product.name;
-                  recordProperties[`Product_${i + 1}_Quantity`] = product.quantity;
-                  recordProperties[`Product_${i + 1}_Price`] = currencyFormatter.format(product.price);
-                  recordProperties[`Product_${i + 1}_Date`] = product.date;
-                } else {
-                  // Placeholder values for missing products
-                  recordProperties[`Product_${i + 1}_Name`] = "";
-                  recordProperties[`Product_${i + 1}_Quantity`] = "";
-                  recordProperties[`Product_${i + 1}_Price`] = "";
-                  recordProperties[`Product_${i + 1}_Date`] = "";
-                }
-              }
-            
-              // Update the schema to include placeholders for 10 products
-              for (let i = 0; i < 10; i++) {
-                schema.push({ name: `Product_${i + 1}_Name`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
-                schema.push({ name: `Product_${i + 1}_Quantity`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
-                schema.push({ name: `Product_${i + 1}_Price`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
-                schema.push({ name: `Product_${i + 1}_Date`, fieldType: "STRING", isPrimary: false, order: schema.length + 1 });
-              }
-            }
+      if (this.objectName === "Opportunity") {
+        await this.fetchOpportunityProducts();
 
-      console.log('Final record properties:', JSON.stringify(recordProperties));
+        // Add products dynamically to recordProperties with placeholders
+        for (let i = 0; i < 10; i++) {
+          if (this.products[i]) {
+            const product = this.products[i];
 
+            // Create a currency formatter for the product's currency
+            const currencyFormatter = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: product.currencyIsoCode,
+              minimumFractionDigits: 2
+            });
+
+            recordProperties[`Product_${i + 1}_Name`] = product.name;
+            recordProperties[`Product_${i + 1}_Quantity`] = product.quantity;
+            recordProperties[`Product_${i + 1}_Price`] =
+              currencyFormatter.format(product.price);
+            recordProperties[`Product_${i + 1}_Date`] = product.date;
+          } else {
+            // Placeholder values for missing products
+            recordProperties[`Product_${i + 1}_Name`] = "";
+            recordProperties[`Product_${i + 1}_Quantity`] = "";
+            recordProperties[`Product_${i + 1}_Price`] = "";
+            recordProperties[`Product_${i + 1}_Date`] = "";
+          }
+        }
+
+        // Update the schema to include placeholders for 10 products
+        for (let i = 0; i < 10; i++) {
+          schema.push({
+            name: `Product_${i + 1}_Name`,
+            fieldType: "STRING",
+            isPrimary: false,
+            order: schema.length + 1
+          });
+          schema.push({
+            name: `Product_${i + 1}_Quantity`,
+            fieldType: "STRING",
+            isPrimary: false,
+            order: schema.length + 1
+          });
+          schema.push({
+            name: `Product_${i + 1}_Price`,
+            fieldType: "STRING",
+            isPrimary: false,
+            order: schema.length + 1
+          });
+          schema.push({
+            name: `Product_${i + 1}_Date`,
+            fieldType: "STRING",
+            isPrimary: false,
+            order: schema.length + 1
+          });
+        }
+      }
+
+      // console.log('Final record properties:', JSON.stringify(recordProperties));
 
       if (this.customFields) {
         const fieldsArray = this.customFields
@@ -2267,18 +2285,16 @@ async handleAdminAction() {
             name: fieldName,
             fieldType: fieldType,
             isPrimary: false,
-            order: schema.length + 1,
+            order: schema.length + 1
           });
         });
       }
 
-
-        await sendDataToEndpoint({ 
-          objectName: this.objectName,
-          properties: recordProperties,
-          schema: schema
-         });
-      
+      await sendDataToEndpoint({
+        objectName: this.objectName,
+        properties: recordProperties,
+        schema: schema
+      });
     } catch (error) {
       console.error("Error in sendData function:", error);
       // this.resetDataInitialization();
@@ -2288,51 +2304,42 @@ async handleAdminAction() {
   async fetchObjectName() {
     try {
       this.objectName = await getObjectName({ recordId: this.recordId });
-      console.log('Object Name:', this.objectName);
       if (this.wiredRecordResult) {
         await refreshApex(this.wiredRecordResult);
       }
     } catch (error) {
-      console.error('Error retrieving object name:', error);
+      console.error("Error retrieving object name:", error);
     }
   }
 
-
   async connectedCallback() {
-
     await this.fetchObjectName();
     await this.handleAsyncOperations();
-    
 
-      this.isInAppBuilder = window.location.href.includes('flexipageEditor');
-        
-    
-      try {
-        const orgId = await getOrgId();
-        if (orgId) {
-            const url = new URL(this.linkUrl);
-            url.searchParams.set('salesforceaccountid', orgId); // Append orgId as a query parameter
-            this.linkUrl = url.toString();
-            console.log("linkUrl", this.linkUrl);
-        } else {
-            console.warn('Organization ID could not be retrieved.');
-        }
-    } catch (error) {
-        console.error("Error retrieving or processing Organization ID:", error);
-    }
-    
-   
+    this.isInAppBuilder = window.location.href.includes("flexipageEditor");
 
-         // Check for admin permissions
-         try {
-          this.isAdmin = await hasAdminPermission(); // Call the Apex method
-          console.log("Admin Permission:", this.isAdmin);
-      } catch (error) {
-          console.error("Error fetching admin permission:", error);
-          this.isAdmin = false; // Default to false on error
+    try {
+      const orgId = await getOrgId();
+      if (orgId) {
+        const url = new URL(this.linkUrl);
+        url.searchParams.set("salesforceaccountid", orgId); // Append orgId as a query parameter
+        this.linkUrl = url.toString();
+      } else {
+        console.warn("Organization ID could not be retrieved.");
       }
+    } catch (error) {
+      console.error("Error retrieving or processing Organization ID:", error);
+    }
 
-      try {
+    //    // Check for admin permissions
+    //    try {
+    //     this.isAdmin = await hasAdminPermission(); // Call the Apex method
+    // } catch (error) {
+    //     console.error("Error fetching admin permission:", error);
+    //     this.isAdmin = false; // Default to false on error
+    // }
+
+    try {
       window.addEventListener("message", (event) => {
         const allowedOrigin = "https://info.marq.com"; // Update to match your allowed origin
 
@@ -2361,14 +2368,13 @@ async handleAdminAction() {
             "error"
           );
         }
-
       });
 
       window.addEventListener("beforeunload", this.cleanup.bind(this));
 
       // Fetch available fields
       this.availableFields = await getAvailableFields({
-        objectName: this.objectName,
+        objectName: this.objectName
       });
       // console.log('Available fields fetched:', JSON.stringify(this.availableFields));
 
@@ -2387,7 +2393,6 @@ async handleAdminAction() {
     window.removeEventListener("beforeunload", this.cleanup.bind(this));
   }
 
-
   async fetchRelatedRecords() {
     if (!this.customFields) return;
 
@@ -2398,7 +2403,7 @@ async handleAdminAction() {
     try {
       const result = await getRelatedRecords({
         parentRecordId: this.recordId,
-        customFields: fieldsArray,
+        customFields: fieldsArray
       });
       // console.log('Related Records:', JSON.stringify(result));
       this.relatedRecords = result; // Store the result in a tracked property
@@ -2406,8 +2411,6 @@ async handleAdminAction() {
       console.error("Error fetching related records:", JSON.stringify(error));
     }
   }
-
-
 
   // Computed classes for tabs
   get projectsTabClass() {
@@ -2462,8 +2465,8 @@ async handleAdminAction() {
                 type: "standard__recordPage",
                 attributes: {
                   recordId: contentDocumentId,
-                  actionName: "view",
-                },
+                  actionName: "view"
+                }
               });
             } else {
               console.error("Content document ID not found");
@@ -2480,66 +2483,73 @@ async handleAdminAction() {
     }
   }
 
-async handleSearch(event) {
+  async handleSearch(event) {
     const searchTerm = event.target.value.trim();
     this.searchTerm = searchTerm; // Update the search term
 
     if (!this.allTemplates || this.allTemplates.length === 0) {
-        try {
-            await this.loadAllTemplates();
-        } catch (error) {
-            console.error('Error loading templates:', error);
-            this.filteredTemplates = []; 
-        }
+      try {
+        await this.loadAllTemplates();
+      } catch (error) {
+        console.error("Error loading templates:", error);
+        this.filteredTemplates = [];
+      }
     }
-    
+
     if (!searchTerm) {
-        this.contentTitle = 'Relevant Content'; // Reset content title
+      this.contentTitle = "Relevant Content"; // Reset content title
     } else {
-        this.contentTitle = 'Search Results';
+      this.contentTitle = "Search Results";
     }
 
     // Update displayed items, which applies search to both templates and projects
     this.updateDisplayedItems();
-}
+  }
 
-
-performSearch(searchTerm) {
+  performSearch(searchTerm) {
     if (searchTerm) {
-        this.contentTitle = 'Search Results';
+      this.contentTitle = "Search Results";
 
-        const lowerSearchTerm = searchTerm.toLowerCase();
+      const lowerSearchTerm = searchTerm.toLowerCase();
 
-        // Perform search for exact and case-insensitive matches
-        this.filteredTemplates = this.allTemplates.filter(template => {
-            const name = template.name || '';
-            const title = template.title || '';
-            const categories = template.categories || [];
+      // Perform search for exact and case-insensitive matches
+      this.filteredTemplates = this.allTemplates.filter((template) => {
+        const name = template.name || "";
+        const title = template.title || "";
+        const categories = template.categories || [];
 
-            const matchesName = name.includes(searchTerm) || name.toLowerCase().includes(lowerSearchTerm);
-            const matchesTitle = title.includes(searchTerm) || title.toLowerCase().includes(lowerSearchTerm);
-            const matchesCategories = categories.some(category =>
-                category.values?.some(value =>
-                    value.includes(searchTerm) || value.toLowerCase().includes(lowerSearchTerm)
-                )
-            );
+        const matchesName =
+          name.includes(searchTerm) ||
+          name.toLowerCase().includes(lowerSearchTerm);
+        const matchesTitle =
+          title.includes(searchTerm) ||
+          title.toLowerCase().includes(lowerSearchTerm);
+        const matchesCategories = categories.some((category) =>
+          category.values?.some(
+            (value) =>
+              value.includes(searchTerm) ||
+              value.toLowerCase().includes(lowerSearchTerm)
+          )
+        );
 
-            return matchesName || matchesTitle || matchesCategories;
-        });
+        return matchesName || matchesTitle || matchesCategories;
+      });
     } else {
-        // Reset to the original filtered templates
-        this.contentTitle = 'Relevant Content';
-        this.filteredTemplates = [...this.originalTemplates];
+      // Reset to the original filtered templates
+      this.contentTitle = "Relevant Content";
+      this.filteredTemplates = [...this.originalTemplates];
     }
 
     // Reset displayed templates and pagination
-    this.displayedTemplates = this.filteredTemplates.slice(0, this.currentOffset || 10);
+    this.displayedTemplates = this.filteredTemplates.slice(
+      0,
+      this.currentOffset || 10
+    );
     this.currentOffset = 10;
 
     // Update UI
     this.updateRowClasses();
-}
-
+  }
 
   updateRowClasses() {
     const templateRows = this.template.querySelectorAll(".template-row");
@@ -2573,7 +2583,6 @@ performSearch(searchTerm) {
       this.isLoading = true;
       this.cycleLoadingText();
 
-
       // Find the selected template from all templates
       const selectedTemplate = this.allTemplates.find(
         (template) => template.id === this.selectedTemplateId
@@ -2603,7 +2612,6 @@ performSearch(searchTerm) {
   async setupIframeSourceForCreate(templateId, templateTitle) {
     this.iframeSrc = null;
     try {
-
       if (this.objectName === "Opportunity") {
         await this.triggerSendData();
       }
@@ -2616,11 +2624,11 @@ performSearch(searchTerm) {
         recordId: this.recordId,
         templateId: templateId,
         templateTitle: projectName,
-        objectName: this.objectName,
+        objectName: this.objectName
       });
 
       if (response.success) {
-        console.log("Project created successfully:", response.project_info);
+        // console.log("Project created successfully:", response.project_info);
         const projectInfo = response.project_info;
         const documentId = projectInfo.id;
         const thumbnailUri = projectInfo.thumbnailUri;
@@ -2636,7 +2644,7 @@ performSearch(searchTerm) {
         const embeddedOptions = {
           enabledFeatures: features,
           fileTypes: fileTypes,
-          showTabs: showTabs,
+          showTabs: showTabs
         };
         const encodedOptions = encodeURIComponent(
           btoa(JSON.stringify(embeddedOptions))
@@ -2650,35 +2658,39 @@ performSearch(searchTerm) {
           projectName: projectName,
           encodedOptions: encodedOptions,
           templateId: templateId,
-          stageName: this.stageName,
+          stageName: this.stageName
         });
 
         const saveProjectInfoResult = JSON.parse(saveProjectInfoResponse);
 
         if (saveProjectInfoResult && saveProjectInfoResult.contentVersionId) {
-            const contentVersionId = saveProjectInfoResult.contentVersionId;
-          console.log(
-            "Content Version created successfully:",
-            saveProjectInfoResult.contentVersionId
-          );
+          const contentVersionId = saveProjectInfoResult.contentVersionId;
+          // console.log(
+          //   "Content Version created successfully:",
+          //   saveProjectInfoResult.contentVersionId
+          // );
 
           if (!contentVersionId) {
-            console.error("Invalid ContentVersionId returned from saveProjectInfo.");
+            console.error(
+              "Invalid ContentVersionId returned from saveProjectInfo."
+            );
             throw new Error("Failed to retrieve a valid ContentVersionId.");
-        }
+          }
 
-          const lastModifiedDate = new Date().toISOString(); 
+          const lastModifiedDate = new Date().toISOString();
 
           // Store the recent change
           this.recentChanges[`${templateId}-${this.recordId}`] = {
             projectId: documentId,
             projectName: projectName,
             contentVersionId: saveProjectInfoResult.contentVersionId,
-            lastModifiedDate: lastModifiedDate,
+            lastModifiedDate: lastModifiedDate
           };
 
           // Remove template from deletedTemplates if it was recreated
-          this.deletedTemplates = this.deletedTemplates.filter((id) => id !== templateId);
+          this.deletedTemplates = this.deletedTemplates.filter(
+            (id) => id !== templateId
+          );
 
           // Refresh displayed templates
           this.updateTextboxFilters();
@@ -2717,7 +2729,6 @@ performSearch(searchTerm) {
   async setupIframeSourceForEdit(templateId, projectId) {
     this.iframeSrc = null;
     try {
-
       if (this.objectName === "Opportunity") {
         await this.triggerSendData();
       }
@@ -2745,7 +2756,7 @@ performSearch(searchTerm) {
       const embeddedOptions = {
         enabledFeatures: features,
         fileTypes: fileTypes,
-        showTabs: showTabs,
+        showTabs: showTabs
       };
       const encodedOptions = encodeURIComponent(
         btoa(JSON.stringify(embeddedOptions))
@@ -2769,7 +2780,6 @@ performSearch(searchTerm) {
     const fallbackUrl = img_fallback;
     img.src = fallbackUrl;
   }
-  
 
   closeSettingsModal() {
     this.isSettingsModalOpen = false;
@@ -2820,16 +2830,24 @@ performSearch(searchTerm) {
         mimeType: messageData.mimeType,
         projectId: messageData.projectId,
         encodedOptions: encodedOptions,
-        templateId: this.selectedTemplateId,
+        templateId: this.selectedTemplateId
       })
         .then(() => {
           this.processUpdateProjectResponse(contentVersionId);
 
           const publicLink = this.publishedLinks[this.selectedTemplateId];
           if (publicLink) {
-            this.publishFileById(contentVersionId, messageData.projectName, this.selectedTemplateId);
+            this.publishFileById(
+              contentVersionId,
+              messageData.projectName,
+              this.selectedTemplateId
+            );
           } else {
-            this.publishFileById(contentVersionId, messageData.projectName, this.selectedTemplateId);
+            this.publishFileById(
+              contentVersionId,
+              messageData.projectName,
+              this.selectedTemplateId
+            );
           }
         })
         .catch((error) => {
@@ -2854,16 +2872,24 @@ performSearch(searchTerm) {
               mimeType: messageData.mimeType,
               projectId: messageData.projectId,
               encodedOptions: encodedOptions,
-              templateId: this.selectedTemplateId,
+              templateId: this.selectedTemplateId
             })
               .then(() => {
                 this.processUpdateProjectResponse(contentVersionId);
 
                 const publicLink = this.publishedLinks[this.selectedTemplateId];
                 if (publicLink) {
-                  this.publishFileById(contentVersionId, messageData.projectName, this.selectedTemplateId);
+                  this.publishFileById(
+                    contentVersionId,
+                    messageData.projectName,
+                    this.selectedTemplateId
+                  );
                 } else {
-                  this.publishFileById(contentVersionId, messageData.projectName, this.selectedTemplateId);
+                  this.publishFileById(
+                    contentVersionId,
+                    messageData.projectName,
+                    this.selectedTemplateId
+                  );
                 }
               })
               .catch((error) => {
@@ -2882,16 +2908,24 @@ performSearch(searchTerm) {
               projectName: messageData.projectName,
               mimeType: messageData.mimeType,
               encodedOptions: encodedOptions,
-              templateId: this.selectedTemplateId,
+              templateId: this.selectedTemplateId
             })
               .then((returnValue) => {
                 this.processSaveDataResponse(returnValue);
 
                 const publicLink = this.publishedLinks[this.selectedTemplateId];
                 if (publicLink) {
-                  this.publishFileById(returnValue, messageData.projectName, this.selectedTemplateId);
+                  this.publishFileById(
+                    returnValue,
+                    messageData.projectName,
+                    this.selectedTemplateId
+                  );
                 } else {
-                  this.publishFileById(returnValue, messageData.projectName, this.selectedTemplateId);
+                  this.publishFileById(
+                    returnValue,
+                    messageData.projectName,
+                    this.selectedTemplateId
+                  );
                 }
               })
               .catch((error) => {
@@ -2966,7 +3000,7 @@ performSearch(searchTerm) {
     updateContentVersionFields({
       contentVersionId: contentVersionId,
       projectId: this.projectId,
-      encodedOptions: encodedOptions,
+      encodedOptions: encodedOptions
     })
       .then(() => {
         this.dispatchEvent(new RefreshEvent());
@@ -2985,7 +3019,7 @@ performSearch(searchTerm) {
       { name: "collaborate", attribute: "enableCollaborate" },
       { name: "share", attribute: "enableShare" },
       { name: "saveName", attribute: "enableSaveName" },
-      { name: "backButton", attribute: "enableBackButton" },
+      { name: "backButton", attribute: "enableBackButton" }
     ];
     allFeatures.forEach((feature) => {
       if (this[feature.attribute]) {
@@ -3002,7 +3036,7 @@ performSearch(searchTerm) {
       { type: "jpg", attribute: "allowJPG" },
       { type: "png", attribute: "allowPNG" },
       { type: "gif", attribute: "allowGIF" },
-      { type: "mp4", attribute: "allowMP4" },
+      { type: "mp4", attribute: "allowMP4" }
     ];
     allFileTypes.forEach((fileType) => {
       if (this[fileType.attribute]) {
@@ -3017,7 +3051,7 @@ performSearch(searchTerm) {
     const allShowTabs = [
       { tab: "dashboard", attribute: "showDashboard" },
       { tab: "documents", attribute: "showDocuments" },
-      { tab: "templates", attribute: "showTemplates" },
+      { tab: "templates", attribute: "showTemplates" }
     ];
     allShowTabs.forEach((tab) => {
       if (this[tab.attribute]) {
@@ -3043,7 +3077,7 @@ performSearch(searchTerm) {
     const embeddedOptions = {
       enabledFeatures: features,
       fileTypes: fileTypes,
-      showTabs: showTabs,
+      showTabs: showTabs
     };
     return encodeURIComponent(btoa(JSON.stringify(embeddedOptions)));
   }
@@ -3052,7 +3086,7 @@ performSearch(searchTerm) {
     const event = new ShowToastEvent({
       title: title,
       message: message,
-      variant: variant,
+      variant: variant
     });
     this.dispatchEvent(event);
   }

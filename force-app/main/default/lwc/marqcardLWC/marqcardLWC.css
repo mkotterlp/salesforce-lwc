@@ -1,56 +1,56 @@
 @font-face {
-  font-family: 'Poppins';
-  src: url('/resource/Poppins/Poppins-Regular.ttf') format('truetype');
+  font-family: "Poppins";
+  src: url("/resource/Poppins/Poppins-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('/resource/Poppins/Poppins-Bold.ttf') format('truetype');
+  font-family: "Poppins";
+  src: url("/resource/Poppins/Poppins-Bold.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('/resource/Poppins/Poppins-Black.ttf') format('truetype');
+  font-family: "Poppins";
+  src: url("/resource/Poppins/Poppins-Black.ttf") format("truetype");
   font-weight: 900;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('/resource/Poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-family: "Poppins";
+  src: url("/resource/Poppins/Poppins-SemiBold.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
 }
 
 :host {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Apply specific font styles and weights to headers */
 h1 {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 900; /* Black weight */
   font-size: 2rem;
 }
 
 h2 {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: bold; /* Bold weight */
   font-size: 1.2rem;
 }
 
 h3 {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500; /* Semi-bold weight */
   font-size: 1.1rem;
 }
 
 p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: normal; /* Regular weight */
   font-size: 1rem;
 }
@@ -62,33 +62,32 @@ p {
 }
 
 .slds-box.admincontrols {
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 
 .admincontrols .slds-icon {
-  width:auto;
-  height:auto;
+  width: auto;
+  height: auto;
 }
 
 .slds-card__body {
-  margin-top:0px;
+  margin-top: 0px;
 }
 
 .slds-grid.slds-card__header {
-  display:none;
+  display: none;
 }
 
 .search-section {
-
 }
 
 /* Search container styling */
 .search-container {
   display: flex;
   width: 100%;
-  margin-left:auto;
-  margin-right:auto;
-  margin-bottom:10px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
   border: 1px solid #d8dde6;
   border-radius: 4px;
   overflow: hidden; /* Keeps children inside the rounded border */
@@ -101,7 +100,7 @@ p {
   font-size: 1rem;
   border: none;
   outline: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Placeholder color */
@@ -132,7 +131,6 @@ p {
   height: 16px;
   fill: white; /* White color for the magnifying glass */
 }
-
 
 .search-input:focus {
   outline: none;
@@ -165,25 +163,24 @@ p {
 }
 
 .template-image-container {
-  background-color: #E9EFF9;
-    border-radius: 8px;
-    width:100%;
-    max-width:100px;
-    display: flex;
-    padding:5px;
-    align-items: center;
-    height: 100%;
-    justify-content: center;
+  background-color: #e9eff9;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100px;
+  display: flex;
+  padding: 5px;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
 }
 
 svg[data-key="down"] {
-  display: none!important;
-  opacity:0;
+  display: none !important;
+  opacity: 0;
 }
 
-
 .templateslist {
-  border-top:1px solid #E9EFF9;
+  border-top: 1px solid #e9eff9;
 }
 
 .slds-p-horizontal_small,
@@ -227,22 +224,19 @@ svg[data-key="down"] {
   overflow: visible; /* Allows dropdown menus to be fully visible */
 }
 
-
-
 .custom-icon {
   width: 24px;
   height: 24px;
   margin-right: 4px;
 }
 
-
 .logo-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 1rem;
-    height: 2rem;
-    margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1rem;
+  height: 2rem;
+  margin-top: 1rem;
 }
 
 .main-modal-image {
@@ -265,11 +259,11 @@ svg[data-key="down"] {
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  font-size: .6rem;
+  font-size: 0.6rem;
   margin-top: -4px;
   margin-left: 10px;
   padding: 0.1rem 0.3rem;
-  border:1px solid #d93267;
+  border: 1px solid #d93267;
   font-weight: 600;
   color: #d93267;
   height: 1rem;
@@ -288,7 +282,7 @@ svg[data-key="down"] {
 .content-title {
   display: flex;
   justify-content: space-between;
-  padding-bottom:0px;
+  padding-bottom: 0px;
 }
 
 .content-body {
@@ -298,8 +292,8 @@ svg[data-key="down"] {
 }
 
 .card-container {
-  padding-left:1rem;
-  padding-right:1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .defaultrow {
@@ -315,7 +309,7 @@ svg[data-key="down"] {
 }
 
 .template-title {
-  font-size:16px;
+  font-size: 16px;
 }
 
 .template-row {
@@ -323,7 +317,7 @@ svg[data-key="down"] {
   height: 80px;
   width: 100%;
   padding-top: 8px;
-  padding-bottom:8px;
+  padding-bottom: 8px;
   border-radius: 0;
   border-left: none;
   border-top: none;
@@ -331,27 +325,26 @@ svg[data-key="down"] {
 }
 
 .button-container {
-  opacity:0;
+  opacity: 0;
 }
 
 .inline-container {
   display: flex;
   align-items: center;
   gap: 0.3rem; /* Adjust spacing between the SVG and text */
-  padding-bottom: .3rem;
+  padding-bottom: 0.3rem;
 }
 
 .filter-container {
-  padding-bottom:8px;
+  padding-bottom: 8px;
 }
 
 .inline-text {
-  font-size: .8rem; /* Adjust font size as needed */
+  font-size: 0.8rem; /* Adjust font size as needed */
 }
 
-
 .template-row:hover .button-container {
-  opacity:1;
+  opacity: 1;
 }
 
 .active-filters-container {
@@ -379,12 +372,11 @@ svg[data-key="down"] {
   cursor: pointer;
 }
 
-
 .template-image {
   margin: 0px;
   padding: 0px;
-  height:100%;
-  width:auto;
+  height: 100%;
+  width: auto;
 }
 
 .action-button-container {
@@ -412,7 +404,6 @@ svg[data-key="down"] {
   color: #0070d2; /* Optional: Change color on hover */
 }
 
-
 .logout-button svg,
 .sync-button svg {
   transition: transform 0.3s ease;
@@ -431,7 +422,6 @@ svg[data-key="down"] {
   }
 }
 
-
 .copy-link-container {
   display: flex;
   align-items: center;
@@ -441,36 +431,37 @@ svg[data-key="down"] {
 .create-icon {
   color: var(--lwc-colorTextLink, #0070d2);
   fill: var(--lwc-colorTextLink, #0070d2);
-  width:20px;
-  height:20px;
-  margin-right:4px;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
 }
 
 .copy-icon {
   color: var(--lwc-colorTextLink, #0070d2);
-  width:16px;
-  height:16px;
+  width: 16px;
+  height: 16px;
 }
 
-.create-icon:hover, .create-project:hover {
+.create-icon:hover,
+.create-project:hover {
   cursor: pointer;
 }
 
 .public-link {
   color: var(--lwc-colorTextLink, #0070d2);
   text-decoration: underline;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 .create-project {
   color: var(--lwc-colorTextLink, #0070d2);
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 lightning-button-menu {
   --slds-c-button-menu-color-background: transparent; /* Transparent background */
-  --slds-c-button-menu-color-border: transparent;     /* Transparent border */
-  --slds-c-button-color-border: transparent;          /* Transparent border */
+  --slds-c-button-menu-color-border: transparent; /* Transparent border */
+  --slds-c-button-color-border: transparent; /* Transparent border */
 }
 
 .copy-icon {
@@ -480,7 +471,6 @@ lightning-button-menu {
   border: none;
   background: none;
 }
-
 
 .slds-card__body {
   padding: 8px;
@@ -492,7 +482,7 @@ lightning-button-menu {
 }
 
 .template-modified-date {
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 .nobackground {

@@ -1,12 +1,29 @@
 <template>
-    <lightning-card title="Upload Logo" icon-name="custom:custom63">
-        <div class="slds-p-around_medium">
-            <lightning-input type="file" label="Upload File" onchange={handleFileChange} class="slds-m-bottom_medium"></lightning-input>
-            <template if:true={fileData}>
-                <p class="slds-text-body_regular slds-m-bottom_small">Selected File: {fileData.fileName}</p>
-                <img src={fileData.previewUrl} alt="File Preview" class="file-preview" />
-            </template>
-            <lightning-button label="Upload" onclick={handleUpload} class="slds-m-top_medium" disabled={isUploadDisabled} variant="brand"></lightning-button>
-        </div>
-    </lightning-card>
+  <lightning-card title="Upload Logo" icon-name="custom:custom63">
+    <div class="slds-p-around_medium">
+      <lightning-input
+        type="file"
+        label="Upload File"
+        onchange={handleFileChange}
+        class="slds-m-bottom_medium"
+      ></lightning-input>
+      <template if:true={fileData}>
+        <p class="slds-text-body_regular slds-m-bottom_small">
+          Selected File: {fileData.fileName}
+        </p>
+        <img
+          src={fileData.previewUrl}
+          alt="File Preview"
+          class="file-preview"
+        />
+      </template>
+      <lightning-button
+        label="Upload"
+        onclick={handleUpload}
+        class="slds-m-top_medium"
+        disabled={isUploadDisabled}
+        variant="brand"
+      ></lightning-button>
+    </div>
+  </lightning-card>
 </template>
