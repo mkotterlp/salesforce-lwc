@@ -308,8 +308,19 @@ svg[data-key="down"] {
   border-right: none;
 }
 
+/* For small screens like mobile devices */
+@media (max-width: 1269px) {
+  .template-title {
+      max-width: 250px;  /* Truncate titles to 150px on small screens */
+  }
+}
+
 .template-title {
   font-size: 16px;
+  width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .template-row {

@@ -49,7 +49,7 @@ import ACCOUNT_INDUSTRY_FIELD from "@salesforce/schema/Account.Industry";
 import ACCOUNT_LOGO_FIELD from "@salesforce/schema/Account.Logo_URL__c";
 import ACCOUNT_NAME_FIELD from "@salesforce/schema/Account.Name";
 import getOrgId from "@salesforce/apex/MarqembedController.getOrgId";
-import hasAdminPermission from "@salesforce/apex/MarqembedController.hasAdminPermission";
+// import hasAdminPermission from "@salesforce/apex/MarqembedController.hasAdminPermission";
 
 export default class Marqcard extends NavigationMixin(LightningElement) {
   @track isInitializing = true;
@@ -108,7 +108,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   @api enableShare;
   @api enableSaveName;
   @api enableBackButton;
-  @api adminsettings;
+  @api showfilters;
   @api allowPDF;
   @api allowJPG;
   @api allowPNG;

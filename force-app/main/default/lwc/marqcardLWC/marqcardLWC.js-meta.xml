@@ -10,7 +10,7 @@
     <targetConfigs>
         <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
 
-            <property name="adminsettings" type="Boolean" label="Turn on admin settings (only shows to those assigned to Marq_Admin)" default="false" description="Enables the admin settings to configure template filter mapping and data"/>
+            <property name="showfilters" type="Boolean" label="Show filters" default="false" description="Displays the active filters when filters are applied"/>
 
             <property name="textboxFields" type="String" label="SFDC Fields to Use" description="Add each SFDC field you want to use in the format of OBJECT.FIELD1, OBJECT.FIELD2, OBJECT.FIELD3. e.g. 'Opportunity.StageName, Opportunity.Industry, Opportunity.category__c'" />
             <property name="textboxFilters" type="String" label="Corresponding Marq Filters" description="Add each corresponding Marq filter you want to use in the format of FILTER1, FILTER2, FILTER3. e.g. 'SF Stage, SF Industry, SF Category'" />

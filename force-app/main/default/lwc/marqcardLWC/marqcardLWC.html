@@ -169,43 +169,45 @@
               </div>
             </div>
 
-            <template if:true={activeFilters.length}>
-              <div class="filter-container">
-                <div class="inline-container">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M19.998 3.993H4.002v.632l5.527 6.33c.315.362.488.823.488 1.3v5.09l4.012 2.66v-7.74c0-.471.17-.928.478-1.287l5.47-6.363.021-.622ZM4.002 3A.997.997 0 0 0 3 3.993v.632c0 .239.087.47.244.65l5.527 6.33c.158.181.244.412.244.65v5.09c0 .33.167.64.445.824l4.011 2.662c.666.441 1.56-.032 1.56-.826v-7.74c0-.236.084-.464.239-.643l5.47-6.363a.988.988 0 0 0 .238-.61L21 4.027A.997.997 0 0 0 20 3H4.001Z"
-                    ></path>
-                  </svg>
-                  <span class="inline-text">Active filters</span>
+            <template if:true={showfilters}>
+              <template if:true={activeFilters.length}>
+                <div class="filter-container">
+                  <div class="inline-container">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M19.998 3.993H4.002v.632l5.527 6.33c.315.362.488.823.488 1.3v5.09l4.012 2.66v-7.74c0-.471.17-.928.478-1.287l5.47-6.363.021-.622ZM4.002 3A.997.997 0 0 0 3 3.993v.632c0 .239.087.47.244.65l5.527 6.33c.158.181.244.412.244.65v5.09c0 .33.167.64.445.824l4.011 2.662c.666.441 1.56-.032 1.56-.826v-7.74c0-.236.084-.464.239-.643l5.47-6.363a.988.988 0 0 0 .238-.61L21 4.027A.997.997 0 0 0 20 3H4.001Z"
+                      ></path>
+                    </svg>
+                    <span class="inline-text">Active filters</span>
+                  </div>
+                  <div class="active-filters-container slds-m-bottom_small">
+                    <template
+                      for:each={activeFilters}
+                      for:item="filter"
+                      for:index="index"
+                    >
+                      <span key={filter.field} class="active-filter-tag">
+                        {filter.value}
+                        <button
+                          class="remove-filter-button"
+                          data-index={index}
+                          onclick={handleRemoveFilter}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    </template>
+                  </div>
                 </div>
-                <div class="active-filters-container slds-m-bottom_small">
-                  <template
-                    for:each={activeFilters}
-                    for:item="filter"
-                    for:index="index"
-                  >
-                    <span key={filter.field} class="active-filter-tag">
-                      {filter.value}
-                      <button
-                        class="remove-filter-button"
-                        data-index={index}
-                        onclick={handleRemoveFilter}
-                      >
-                        &times;
-                      </button>
-                    </span>
-                  </template>
-                </div>
-              </div>
+              </template>
             </template>
 
             <template if:false={templatesprocessed}>
@@ -727,18 +729,26 @@
             </div>
 
             <h2 class="pspace" style="font-size: 18px; font-weight: 500">
-              We've generated a shareable link that you can include in your
-              emails.
+              Copy your shareable link
             </h2>
 
             <p class="pspace">
               This link provides prospects or clients with seamless access to
               your content, keeps them updated with any changes you make to the
-              file, and allows you to track their engagement. Note, this can be
+              file, and allows you to track their engagement. </p>
+              
+              <p class="pspace">Note, this can be
               pasted in any textbox that supports rich text with anchored links.
-            </p>
+           </p>
 
             <!-- FAQ Accordion -->
+            <lightning-accordion
+            class="custom-accordion"
+            allow-multiple-sections-open
+          > <lightning-accordion-section
+          label="Additional Information"
+          name="additional-info"
+        >
             <lightning-accordion
               class="custom-accordion"
               allow-multiple-sections-open
@@ -862,6 +872,8 @@
                 </div>
               </lightning-accordion-section>
             </lightning-accordion>
+          </lightning-accordion-section>
+        </lightning-accordion>
           </div>
 
           <footer class="slds-modal__footer">
