@@ -749,84 +749,90 @@ public with sharing class MarqembedController {
     }
   }
 
-  @AuraEnabled
-  public static String createPublicLink(
-    String contentVersionId,
-    String projectName
-  ) {
-    try {
-      if (String.isBlank(contentVersionId)) {
-        throw new AuraHandledException('ContentVersionId is required.');
-      }
-      if (String.isBlank(projectName)) {
-        throw new AuraHandledException('Project name is required.');
-      }
+@AuraEnabled
+public static String createPublicLink(String contentVersionId, String projectName) {
+  try {
+    if (String.isBlank(contentVersionId)) {
+      throw new AuraHandledException('ContentVersionId is required.');
+    }
+    if (String.isBlank(projectName)) {
+      throw new AuraHandledException('Project name is required.');
+    }
 
-      // Retrieve the ContentDocumentId from the initial ContentVersion
-      ContentVersion contentVersion = [
-        SELECT Id, ContentDocumentId
-        FROM ContentVersion
-        WHERE Id = :contentVersionId
-        LIMIT 1
-      ];
+    // Retrieve the ContentDocumentId from the initial ContentVersion
+    ContentVersion contentVersion = [
+      SELECT Id, ContentDocumentId
+      FROM ContentVersion
+      WHERE Id = :contentVersionId
+      LIMIT 1
+    ];
 
-      // Retrieve the latest ContentVersion (IsLatest = true)
-      ContentVersion latestContentVersion = [
-        SELECT Id
-        FROM ContentVersion
-        WHERE
-          ContentDocumentId = :contentVersion.ContentDocumentId
-          AND IsLatest = TRUE
-        LIMIT 1
-      ];
+    // Retrieve the latest ContentVersion (IsLatest = true)
+    ContentVersion latestContentVersion = [
+      SELECT Id
+      FROM ContentVersion
+      WHERE ContentDocumentId = :contentVersion.ContentDocumentId AND IsLatest = TRUE
+      LIMIT 1
+    ];
 
-      // Use the latest ContentVersionId for creating the public link
-      String latestContentVersionId = latestContentVersion.Id;
+    String latestContentVersionId = latestContentVersion.Id;
 
-      // Create a ContentDistribution record (Public Link)
-      ContentDistribution publicLink = new ContentDistribution();
+    // Check if a ContentDistribution already exists
+    List<ContentDistribution> existingLinks = [
+      SELECT Id, DistributionPublicUrl
+      FROM ContentDistribution
+      WHERE ContentVersionId = :latestContentVersionId
+      LIMIT 1
+    ];
+
+    ContentDistribution publicLink;
+
+    if (!existingLinks.isEmpty()) {
+      // Use the existing link
+      publicLink = existingLinks[0];
+    } else {
+      // Create a new ContentDistribution record
+      publicLink = new ContentDistribution();
       publicLink.ContentVersionId = latestContentVersionId;
-      publicLink.Name = projectName; // Use the project name as the title
-      publicLink.PreferencesNotifyOnVisit = false; // Disable tracking visits
-      publicLink.PreferencesAllowOriginalDownload = true; // Allow file downloads
+      publicLink.Name = projectName;
+      publicLink.PreferencesNotifyOnVisit = false;
+      publicLink.PreferencesAllowOriginalDownload = true;
 
       insert publicLink;
 
-      // Retrieve the DistributionPublicUrl
+      // Retrieve the DistributionPublicUrl for the new link
       publicLink = [
         SELECT DistributionPublicUrl
         FROM ContentDistribution
         WHERE Id = :publicLink.Id
       ];
-
-      System.debug('Public Link Created: ' + publicLink.DistributionPublicUrl);
-
-      // Save the public link to a custom field on the latest ContentVersion record
-      ContentVersion contentVersionToUpdate = [
-        SELECT Id, Public_Link__c
-        FROM ContentVersion
-        WHERE
-          ContentDocumentId = :contentVersion.ContentDocumentId
-          AND IsLatest = TRUE
-        LIMIT 1
-      ];
-      contentVersionToUpdate.Public_Link__c = publicLink.DistributionPublicUrl;
-      update contentVersionToUpdate;
-
-      // Return the unrestricted public link URL
-      return JSON.serialize(
-        new Map<String, String>{
-          'success' => 'true',
-          'contentPublicUrl' => publicLink.DistributionPublicUrl
-        }
-      );
-    } catch (Exception e) {
-      System.debug('Error creating public link: ' + e.getMessage());
-      throw new AuraHandledException(
-        'Error creating public link: ' + e.getMessage()
-      );
     }
+
+    // Save the public link to a custom field on the latest ContentVersion record
+    ContentVersion contentVersionToUpdate = [
+      SELECT Id, Public_Link__c
+      FROM ContentVersion
+      WHERE ContentDocumentId = :contentVersion.ContentDocumentId AND IsLatest = TRUE
+      LIMIT 1
+    ];
+
+    contentVersionToUpdate.Public_Link__c = publicLink.DistributionPublicUrl;
+    update contentVersionToUpdate;
+
+    // Return the public link URL
+    return JSON.serialize(
+      new Map<String, String>{
+        'success' => 'true',
+        'contentPublicUrl' => publicLink.DistributionPublicUrl
+      }
+    );
+  } catch (Exception e) {
+    System.debug('Error creating public link: ' + e.getMessage());
+    throw new AuraHandledException('Error creating public link: ' + e.getMessage());
   }
+}
+
+
 
   @AuraEnabled(cacheable=true)
   public static Id findContentDocumentId(Id contentVersionId) {

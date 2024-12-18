@@ -4,7 +4,9 @@ public with sharing class MarqCreateApi {
     String recordId,
     String templateId,
     String templateTitle,
-    String objectName
+    String objectName,
+    String template_title_primary,
+    String template_title_secondary
   ) {
     Map<String, Object> result = new Map<String, Object>();
 
@@ -30,6 +32,8 @@ public with sharing class MarqCreateApi {
       requestBody.put('objecttype', objectName);
       requestBody.put('salesforceaccountid', salesforceAccountId);
       requestBody.put('salesforceuserid', salesforceUserId);
+      requestBody.put('template_title_primary', template_title_primary);
+      requestBody.put('template_title_secondary', template_title_secondary);
 
       String serializedRequestBody = JSON.serialize(requestBody);
       request.setBody(serializedRequestBody);

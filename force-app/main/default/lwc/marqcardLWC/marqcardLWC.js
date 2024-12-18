@@ -48,6 +48,7 @@ import getRelatedRecords from "@salesforce/apex/MarqDataSender.getRelatedRecords
 import ACCOUNT_INDUSTRY_FIELD from "@salesforce/schema/Account.Industry";
 import ACCOUNT_LOGO_FIELD from "@salesforce/schema/Account.Logo_URL__c";
 import ACCOUNT_NAME_FIELD from "@salesforce/schema/Account.Name";
+import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
 import getOrgId from "@salesforce/apex/MarqembedController.getOrgId";
 // import hasAdminPermission from "@salesforce/apex/MarqembedController.hasAdminPermission";
 
@@ -56,6 +57,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   @track forceSync = false;
   @track isSyncing = false;
   @track deletedFilters = [];
+  @track canSendEmail = false;
   @api recordId;
   @api buttonLabel = "Create New";
   @track linkLabel = "Create Public Link";
@@ -105,10 +107,10 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   @api enableDownload;
   @api enablePrint;
   @api enableCollaborate;
-  @api enableShare;
-  @api enableSaveName;
-  @api enableBackButton;
+  @track enableShare = true;
+  @track enableBackButton = false;
   @api showfilters;
+  @api enableEmail;
   @api allowPDF;
   @api allowJPG;
   @api allowPNG;
@@ -201,8 +203,11 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   async initFilters() {
     try {
       // Initialize displayedTemplates based on filtered templates
-      this.displayedTemplates = this.templates.slice(0, this.loadCount || 10);
-      this.currentOffset = this.loadCount || 10;
+      // this.displayedTemplates = this.templates.slice(0, this.loadCount || 10);
+      // this.currentOffset = this.loadCount || 10;
+      this.displayedTemplates = [...this.templates];
+      this.currentOffset = this.templates.length;
+
       this.isFiltering = false;
     } catch (error) {
       console.error("Error in initFilters:", error);
@@ -279,12 +284,13 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
 
   @wire(getRecord, {
     recordId: "$recordId",
-    fields: ["Opportunity.AccountId"]
+    fields: ["Opportunity.AccountId", "Opportunity.Name"]
   })
   wiredOpportunity({ error, data }) {
     if (data) {
       // Retrieve the AccountId from the Opportunity
       this.accountId = getFieldValue(data, "Opportunity.AccountId");
+      this.opportunityName = getFieldValue(data, "Opportunity.Name");
     } else if (error) {
       console.warn("Error fetching opportunity data:", error);
     }
@@ -591,6 +597,10 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     }
   }
 
+  get showaccountoauth() {
+    return !this.accountExists;
+  }
+
   get templatesprocessed() {
     return !this.templateisLoading && !this.isCheckingContent;
   }
@@ -796,7 +806,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
       this.isOAuthInitialized = true;
       this.recentlyReinitializedOAuth = true; // Set the flag after OAuth reinitialization
       this.isAuthCodeModalOpen = false;
-      if (this.metadataType === "Data") {
+      if (this.metadataType === "data") {
         this.isMarqDataPresent = true;
         this.accountExists = true;
       }
@@ -846,7 +856,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   }
 
   copyPublicLinkFromModal() {
-    this.copyToClipboard(this.currentPublicLink);
+    this.copyToClipboard(this.currentPublicLink, false);
     this.showToast("Success", "Public link copied to clipboard.", "success");
     this.isPublicLinkModalOpen = false;
     this.currentPublicLink = "";
@@ -1199,10 +1209,11 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
 
     // Update displayedProjects and displayedTemplates
     this.displayedProjects = filteredProjects;
-    this.displayedTemplates = filteredTemplates.slice(
-      0,
-      this.currentOffset || 10
-    );
+    // this.displayedTemplates = filteredTemplates.slice(
+    //   0,
+    //   this.currentOffset || 10
+    // );
+    this.displayedTemplates = [...filteredTemplates];
   }
 
   matchesSearchTerm(item, lowerSearchTerm) {
@@ -1634,6 +1645,19 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     });
   }
 
+  handleSVGCopyClick(event) {
+    event.preventDefault();
+
+    const publicLink = event.target.dataset.publicLink;
+
+    if (publicLink) {
+      this.copyToClipboard(publicLink, false);
+      this.showToast("Success", "Public link copied to clipboard.", "success");
+    } else {
+      this.showToast("Error", "No public link available.", "error");
+    }
+  }
+
   // Handle title click
   handleTitleClick(event) {
     const templateId = event.currentTarget.dataset.id;
@@ -1685,6 +1709,10 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
 
       case "createPublicLink":
         this.publishFileById(contentVersionId, templateName, templateId);
+        break;
+
+      case "sendEmail":
+        this.handleSendEmail(publicLink, templateName);
         break;
 
       case "copyPublicLink":
@@ -1757,6 +1785,27 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     }
   }
 
+  handleSendEmail(publicLink, templateName) {
+    const emailBody = `
+    <p>Hello,</p>
+    <p>Here is the <a href="${publicLink}">${templateName}</a></p>
+`;
+    const defaultValues = encodeDefaultFieldValues({
+      HtmlBody: emailBody
+    });
+
+    this[NavigationMixin.Navigate]({
+      type: "standard__quickAction",
+      attributes: {
+        apiName: "Global.SendEmail"
+      },
+      state: {
+        recordId: this.recordId,
+        defaultFieldValues: defaultValues
+      }
+    });
+  }
+
   async publishFileById(contentVersionId, templateName, templateId) {
     try {
       // Check if contentVersionId exists for the related content
@@ -1805,7 +1854,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
         this.publishedLinks[templateId] = publicUrl;
         this.currentPublicLink = publicUrl; // Set the link for the modal
         this.currentTemplateName = templateName;
-        this.isPublicLinkModalOpen = true; // Open the modal
+        // this.isPublicLinkModalOpen = true; // Open the modal
 
         // Update the recentChanges using the helper function
         this.addPublicLinkToRecentChanges(templateId, this.recordId, {
@@ -1834,7 +1883,7 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
 
     if (publicLink) {
       const emailCompatibleLink = `<a href="${publicLink}" target="_blank">${templateName}</a>`;
-      this.copyToClipboard(emailCompatibleLink, true);
+      this.copyToClipboard(emailCompatibleLink, false);
       this.showToast("Success", "Public link copied to clipboard.", "success");
       this.closePublicLinkModal();
     } else {
@@ -1842,10 +1891,9 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     }
   }
 
-  handleCopyPublicLink(publicLink, templateName) {
+  handleCopyPublicLink(publicLink) {
     if (publicLink) {
-      const emailCompatibleLink = `<a href="${publicLink}" target="_blank">${templateName}</a>`;
-      this.copyToClipboard(emailCompatibleLink, true);
+      this.copyToClipboard(publicLink, false);
       this.showToast("Success", "Public link copied to clipboard.", "success");
       this.closePublicLinkModal();
     } else {
@@ -2624,11 +2672,13 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
         recordId: this.recordId,
         templateId: templateId,
         templateTitle: projectName,
-        objectName: this.objectName
+        objectName: this.objectName,
+        template_title_primary: this.accountname || null,
+        template_title_secondary: this.opportunityName || null
       });
 
       if (response.success) {
-        // console.log("Project created successfully:", response.project_info);
+        console.log("Project created successfully:", response.project_info);
         const projectInfo = response.project_info;
         const documentId = projectInfo.id;
         const thumbnailUri = projectInfo.thumbnailUri;
@@ -2639,12 +2689,12 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
           : "";
         const features = this.parseFeatures();
         const fileTypes = this.parseFileTypes();
-        const showTabs = this.parseShowTabs();
+        // const showTabs = this.parseShowTabs();
 
         const embeddedOptions = {
           enabledFeatures: features,
-          fileTypes: fileTypes,
-          showTabs: showTabs
+          fileTypes: fileTypes
+          // showTabs: showTabs
         };
         const encodedOptions = encodeURIComponent(
           btoa(JSON.stringify(embeddedOptions))
@@ -2751,12 +2801,12 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
 
       const features = this.parseFeatures();
       const fileTypes = this.parseFileTypes();
-      const showTabs = this.parseShowTabs();
+      // const showTabs = this.parseShowTabs();
 
       const embeddedOptions = {
         enabledFeatures: features,
-        fileTypes: fileTypes,
-        showTabs: showTabs
+        fileTypes: fileTypes
+        // showTabs: showTabs
       };
       const encodedOptions = encodeURIComponent(
         btoa(JSON.stringify(embeddedOptions))
@@ -2812,8 +2862,15 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   }
 
   saveData(messageData) {
+    console.log("Project saved:", messageData);
     const encodedOptions = this.buildEncodedOptions();
     const templateKey = `${this.selectedTemplateId}-${this.recordId}`;
+
+    // Update recentChanges with the latest project name
+    this.recentChanges[templateKey] = {
+      ...this.recentChanges[templateKey],
+      projectName: messageData.projectName
+    };
 
     // Check if there are recent changes for this template
     if (
@@ -3018,7 +3075,6 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
       { name: "print", attribute: "enablePrint" },
       { name: "collaborate", attribute: "enableCollaborate" },
       { name: "share", attribute: "enableShare" },
-      { name: "saveName", attribute: "enableSaveName" },
       { name: "backButton", attribute: "enableBackButton" }
     ];
     allFeatures.forEach((feature) => {
@@ -3046,20 +3102,20 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
     return fileTypes;
   }
 
-  parseShowTabs() {
-    const showTabs = [];
-    const allShowTabs = [
-      { tab: "dashboard", attribute: "showDashboard" },
-      { tab: "documents", attribute: "showDocuments" },
-      { tab: "templates", attribute: "showTemplates" }
-    ];
-    allShowTabs.forEach((tab) => {
-      if (this[tab.attribute]) {
-        showTabs.push(tab.tab);
-      }
-    });
-    return showTabs;
-  }
+  // parseShowTabs() {
+  //   const showTabs = [];
+  //   const allShowTabs = [
+  //     { tab: "dashboard", attribute: "showDashboard" },
+  //     { tab: "documents", attribute: "showDocuments" },
+  //     { tab: "templates", attribute: "showTemplates" }
+  //   ];
+  //   allShowTabs.forEach((tab) => {
+  //     if (this[tab.attribute]) {
+  //       showTabs.push(tab.tab);
+  //     }
+  //   });
+  //   return showTabs;
+  // }
 
   buildDataOptions(dataSetType, dataSetId, key, value) {
     let dataOptions = `dataSetType=${dataSetType}&dataSetId=${dataSetId}&key=${key}`;
@@ -3072,12 +3128,12 @@ export default class Marqcard extends NavigationMixin(LightningElement) {
   buildEncodedOptions() {
     const features = this.parseFeatures();
     const fileTypes = this.parseFileTypes();
-    const showTabs = this.parseShowTabs();
+    // const showTabs = this.parseShowTabs();
 
     const embeddedOptions = {
       enabledFeatures: features,
-      fileTypes: fileTypes,
-      showTabs: showTabs
+      fileTypes: fileTypes
+      // showTabs: showTabs
     };
     return encodeURIComponent(btoa(JSON.stringify(embeddedOptions)));
   }

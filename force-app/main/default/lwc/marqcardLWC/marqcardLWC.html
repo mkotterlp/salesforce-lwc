@@ -51,7 +51,7 @@
         </template>
       </template> -->
 
-            <template if:false={accountExists}>
+            <template if:true={showaccountoauth}>
               <div class="slds-box slds-m-bottom_small admincontrols">
                 <lightning-button
                   variant="neutral"
@@ -290,7 +290,8 @@
                                       </a>
                                       <svg
                                         class="copy-icon"
-                                        onclick={handleCopyPublicLink}
+                                        onclick={handleSVGCopyClick}
+                                        data-public-link={template.publicLink}
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
                                         fill="none"
@@ -348,6 +349,17 @@
                                         icon-name="utility:link"
                                       ></lightning-menu-item>
                                     </template>
+
+                                    <template if:true={enableEmail}>
+                                    <template if:true={template.publicLink}>
+                                      <lightning-menu-item
+                                        label="Send email"
+                                        value="sendEmail"
+                                        icon-name="utility:email"
+                                      ></lightning-menu-item>
+                                    </template>
+                                  </template>
+
 
                                     <!-- Show "Public Link" if publicLink is not present -->
                                     <!-- <template if:false={template.publicLink}>
